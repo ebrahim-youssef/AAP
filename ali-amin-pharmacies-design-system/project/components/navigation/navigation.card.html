@@ -1,0 +1,18 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Navigation — AppHeader, TopBar, TabBar, ListLink, SectionTitle, BranchButton" subtitle="Blue header on home only; four tabs" -->
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{margin:0;font-family:var(--font-sans);background:#fff;color:var(--text-primary)}.g{padding:20px;display:grid;gap:16px}.r{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.l{font-size:11px;font-weight:700;color:var(--text-tertiary);font-family:var(--font-sans);margin-bottom:6px;direction:ltr;text-align:left}</style></head>
+<body><div id="root" class="aa-root"></div>
+<script type="text/babel">
+const NS = window.DesignSystem_032903;
+
+const { AppHeader, SearchField, TopBar, TabBar, ListLink, SectionTitle, BranchButton } = NS;
+function Card(){const [t,setT]=React.useState('home');return <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:1,background:'var(--border-hairline)'}}>
+<div style={{background:'#fff'}}><AppHeader branch="كفر الجمال"><SearchField /></AppHeader><SectionTitle action="الكل">محتاج حد يساعدك؟</SectionTitle><ListLink icon="message-circle" title="اسأل صيدلي" description="ابعت الاسم أو سؤالك على واتساب" /><ListLink icon="map-pin" title="الفروع" description="العنوان والمواعيد والاتجاهات" /></div>
+<div style={{background:'#fff',display:'flex',flexDirection:'column'}}><TopBar title="تفاصيل المنتج" onBack={()=>{}} right={<BranchButton tone="light" branch="كفر الجمال" />} /><TopBar onBack={()=>{}}><SearchField variant="sunken" defaultValue="كونكور" /></TopBar><div style={{flex:1}}></div><TabBar active={t} onChange={setT} /></div>
+</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<Card />);
+</script></body></html>

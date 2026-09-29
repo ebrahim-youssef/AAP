@@ -1,0 +1,16 @@
+/* Ali Amin — Clear Shelf palette. Blue is the shop sign; yellow is used ONLY for "needs confirming"; everything else is neutral. */
+:root{
+--blue-50:#E7F1FC;--blue-500:#1265C4;--blue-600:#0E57AB;--blue-700:#0B4A91;--blue-900:#082D5C;
+--yellow-100:#FFF4D1;--yellow-400:#FFC629;
+--ink-900:#142235;--ink-600:#56667B;--ink-500:#7A8797;--ink-400:#9AA6B5;
+--grey-0:#FFFFFF;--grey-50:#F7F8FA;--grey-100:#F2F4F7;--grey-200:#E6EAF0;--grey-300:#D7DEE7;--grey-400:#C9D3DF;--grey-500:#AEB9C7;
+--green-50:#E6F4EE;--green-700:#087A55;--red-50:#FBECEE;--red-700:#A93546;--amber-700:#8B5711;
+
+--surface-page:var(--grey-0);--surface-sunken:var(--grey-100);--surface-note:var(--grey-50);--surface-brand:var(--blue-500);--surface-rail:var(--blue-900);--surface-selected:#F5F9FE;--surface-overlay:rgba(8,45,92,.45);
+--text-primary:var(--ink-900);--text-secondary:var(--ink-600);--text-tertiary:var(--ink-500);--text-brand:var(--blue-900);--text-link:var(--blue-500);--text-on-brand:var(--grey-0);--text-placeholder:var(--ink-500);
+--border-hairline:var(--grey-200);--border-control:var(--grey-300);--border-strong:var(--grey-400);--border-tag:var(--ink-900);--border-on-brand:rgba(255,255,255,.4);
+--action-primary:var(--blue-500);--action-primary-hover:var(--blue-600);--action-primary-press:var(--blue-700);--action-on-primary:var(--grey-0);
+--focus-ring:var(--blue-900);
+--status-check-bg:var(--yellow-400);--status-check-fg:var(--blue-900);--status-confirmed-bg:var(--green-50);--status-confirmed-fg:var(--green-700);--status-unavailable-bg:var(--red-50);--status-unavailable-fg:var(--red-700);--status-info-bg:var(--grey-100);--status-info-fg:var(--ink-600);
+--edge-segment:var(--blue-900);--edge-accent:var(--yellow-400);
+}
