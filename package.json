@@ -1,0 +1,31 @@
+{
+  "name": "aap",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "check": "astro check",
+    "test": "npm run build && vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "14.3.3",
+    "astro": "7.3.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.10",
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.19.0",
+    "typescript": "6.0.3",
+    "vitest": "5.0.2",
+    "wrangler": "4.144.0"
+  },
+  "allowScripts": {
+    "workerd@1.20260926.1": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.35.4": true,
+    "sharp@0.35.5": true
+  }
+}

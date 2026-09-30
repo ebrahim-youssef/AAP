@@ -1,0 +1,33 @@
+---
+interface Props {
+  english?: boolean;
+  href?: string;
+  size?: "md" | "sm" | "lg";
+  tone?: "brand" | "inverse";
+}
+
+const {
+  english = false,
+  href,
+  size = "md",
+  tone = "brand",
+} = Astro.props;
+const classes = [
+  "aa-wm",
+  tone === "inverse" ? "aa-wm--inverse" : "",
+  size !== "md" ? `aa-wm--${size}` : "",
+].filter(Boolean).join(" ");
+---
+{href ? (
+  <a class={classes} href={href} aria-label="صيدليات علي أمين">
+    <strong>علي أمين</strong>
+    <small>صيدليات</small>
+    {english && <em>ALI AMIN PHARMACIES</em>}
+  </a>
+) : (
+  <span class={classes} aria-label="صيدليات علي أمين">
+    <strong>علي أمين</strong>
+    <small>صيدليات</small>
+    {english && <em>ALI AMIN PHARMACIES</em>}
+  </span>
+)}

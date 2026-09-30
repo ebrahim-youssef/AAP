@@ -1,0 +1,12 @@
+---
+interface Props {
+  height?: number;
+  tone?: "default" | "inverse";
+}
+
+const { height = 4, tone = "default" } = Astro.props;
+const classes = ["aa-edge", tone === "inverse" ? "aa-edge--inverse" : ""].filter(Boolean).join(" ");
+---
+<div class={classes} style={`height: ${height}px`} aria-hidden="true">
+  <i></i><i></i><i></i><i></i>
+</div>
