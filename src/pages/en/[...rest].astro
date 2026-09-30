@@ -1,0 +1,13 @@
+---
+import Base from "../../layouts/Base.astro";
+import NotFoundContent from "../../components/NotFoundContent.astro";
+import { getStrings } from "../../i18n/strings";
+
+export const prerender = false;
+
+Astro.response.status = 404;
+const text = getStrings("en");
+---
+<Base canonicalPath="/404" title={text.notFound.title} description={text.notFound.description}>
+  <NotFoundContent locale="en" />
+</Base>

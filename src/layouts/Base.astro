@@ -9,6 +9,7 @@ import { absoluteLocaleUrl } from "../lib/site-url";
 import { serializeJsonLd } from "../lib/seo";
 
 interface Props {
+  canonicalPath?: string;
   description: string;
   home?: boolean;
   jsonLd?: unknown;
@@ -16,6 +17,7 @@ interface Props {
 }
 
 const {
+  canonicalPath,
   description,
   home = false,
   jsonLd,
@@ -25,11 +27,12 @@ const currentPath = Astro.url.pathname;
 const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
 const text = getStrings(locale);
 const pagePath = unlocalizedPath(currentPath);
-const canonicalUrl = absoluteLocaleUrl(Astro.site, locale, pagePath);
+const canonicalPagePath = canonicalPath ?? pagePath;
+const canonicalUrl = absoluteLocaleUrl(Astro.site, locale, canonicalPagePath);
 const alternateUrls = {
-  ar: absoluteLocaleUrl(Astro.site, "ar", pagePath),
-  en: absoluteLocaleUrl(Astro.site, "en", pagePath),
-  "x-default": absoluteLocaleUrl(Astro.site, "ar", pagePath),
+  ar: absoluteLocaleUrl(Astro.site, "ar", canonicalPagePath),
+  en: absoluteLocaleUrl(Astro.site, "en", canonicalPagePath),
+  "x-default": absoluteLocaleUrl(Astro.site, "ar", canonicalPagePath),
 };
 const jsonLdText = jsonLd === undefined ? null : serializeJsonLd(jsonLd);
 ---

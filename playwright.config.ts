@@ -5,7 +5,7 @@ export default defineConfig({
   webServer: {
     command: "npm run build && npm run db:local && npx wrangler dev --port 8787",
     url: "http://localhost:8787",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
   use: {
     baseURL: "http://localhost:8787",

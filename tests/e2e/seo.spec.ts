@@ -201,6 +201,23 @@ test("unknown static route returns 404", async ({ request }) => {
   expect((await request.get("/does-not-exist")).status()).toBe(404);
 });
 
+test("unknown routes keep the 404 document in the requested locale", async ({ page }) => {
+  for (const route of [
+    { path: "/en/not-a-page", locale: "en", dir: "ltr", canonical: origin + "/en/404" },
+    { path: "/not-a-page", locale: "ar", dir: "rtl", canonical: origin + "/404" },
+  ] as const) {
+    const response = await page.goto(route.path);
+
+    expect(response?.status(), route.path).toBe(404);
+    await expect(page.locator("html"), route.path).toHaveAttribute("lang", route.locale);
+    await expect(page.locator("html"), route.path).toHaveAttribute("dir", route.dir);
+    await expect(page.locator('link[rel="canonical"]'), route.path).toHaveAttribute(
+      "href",
+      route.canonical,
+    );
+  }
+});
+
 test("unknown medicine slugs return 404 in both locales", async ({ request }) => {
   expect((await request.get("/medicines/does-not-exist")).status()).toBe(404);
   expect((await request.get("/en/medicines/does-not-exist")).status()).toBe(404);
