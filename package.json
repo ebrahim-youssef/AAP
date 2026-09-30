@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "npm run data && astro build",
+    "db:local": "wrangler d1 execute aap --local --file data/medicines.sql",
     "check": "astro check",
     "data": "node scripts/import-medicines.ts",
     "test": "npm run build && vitest run",

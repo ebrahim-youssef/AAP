@@ -6,6 +6,6 @@ dist/
 .env.*
 .dev.vars
 data/medicines.sql
-public/search-index.json
+public/search/
 playwright-report/
 test-results/

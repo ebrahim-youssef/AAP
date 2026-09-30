@@ -6,5 +6,13 @@
   "assets": {
     "directory": "./dist/client",
     "binding": "ASSETS"
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aap",
+      // The real database id is set at deploy.
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
 }

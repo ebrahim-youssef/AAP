@@ -184,6 +184,78 @@ body {
   margin-top: var(--space-4);
 }
 
+.aa-search-no-js,
+.aa-search-status,
+.aa-search-empty {
+  margin: var(--space-4) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
+
+.aa-search-no-js a,
+.aa-search-empty a,
+.aa-medicine-back a {
+  color: var(--text-link);
+  font-weight: var(--weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.aa-search-status {
+  color: var(--text-primary);
+  font-weight: var(--weight-bold);
+}
+
+.aa-search-results {
+  margin: var(--space-4) calc(var(--gutter-mobile) * -1) 0;
+}
+
+.aa-prow {
+  text-decoration: none;
+}
+
+.aa-prow__alias {
+  direction: rtl;
+  text-align: right;
+}
+
+.aa-prow h3[dir="ltr"],
+.aa-medicine-page h1[dir="ltr"],
+.aa-facts dd[dir="ltr"] {
+  text-align: right;
+}
+
+.aa-medicine-back {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-small);
+}
+
+.aa-medicine-alias {
+  margin: var(--space-2) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+}
+
+.aa-medicine-known {
+  margin: var(--space-3) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
+
+.aa-medicine-notices {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.aa-medicine-missing > p {
+  margin: var(--space-3) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
 .aa-section-heading {
   display: flex;
   align-items: baseline;
@@ -267,7 +339,7 @@ body {
   margin: 0;
   color: var(--text-primary);
   font-weight: var(--weight-bold);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .aa-delivery-line {
@@ -528,5 +600,9 @@ body {
 
   .aa-contact-actions {
     max-width: 560px;
+  }
+
+  .aa-search-results {
+    margin-inline: 0;
   }
 }

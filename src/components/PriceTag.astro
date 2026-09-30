@@ -1,0 +1,39 @@
+---
+import StatusTag from "./StatusTag.astro";
+
+interface Props {
+  currency?: string;
+  label?: string;
+  price: number;
+  size?: "lg" | "md";
+  status?: "check" | "confirmed" | "unavailable";
+  statusLabel?: string;
+  updatedAt: string;
+}
+
+const {
+  currency = "ج.م",
+  label = "آخر سعر معروف",
+  price,
+  size = "lg",
+  status = "check",
+  statusLabel,
+  updatedAt,
+} = Astro.props;
+const displayPrice = Number.isInteger(price)
+  ? String(price)
+  : price.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+---
+<div class:list={["aa-price", size === "md" && "aa-price--md"]}>
+  <div class="aa-price__top">
+    <div>
+      <small>{label}</small>
+      <b>{displayPrice}</b>
+    </div>
+    <span>{" "}{currency}</span>
+  </div>
+  <div class="aa-rail">
+    <span>{updatedAt}</span>
+    <StatusTag status={status} label={statusLabel} rail={true} />
+  </div>
+</div>

@@ -1,0 +1,16 @@
+---
+interface Props {
+  label?: string;
+  rail?: boolean;
+  status?: "check" | "confirmed" | "unavailable" | "info";
+}
+
+const { label, rail = false, status = "check" } = Astro.props;
+const labels = {
+  check: "يلزم تأكيد",
+  confirmed: "متأكدين",
+  unavailable: "مش متاح",
+  info: "معلومة",
+};
+---
+<span class:list={["aa-tag", `aa-tag--${status}`, rail && "aa-rail__status", rail && `aa-rail__status--${status}`]}>{label ?? labels[status]}</span>
