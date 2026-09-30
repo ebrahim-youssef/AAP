@@ -1,9 +1,12 @@
 ---
 import Icon from "./Icon.astro";
+import { localePath, type Locale } from "../lib/i18n";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
   id?: string;
   labelHidden?: boolean;
+  locale: Locale;
   variant?: "default" | "onBrand" | "sunken";
   value?: string;
 }
@@ -11,13 +14,15 @@ interface Props {
 const {
   id = "medicine-search",
   labelHidden = false,
+  locale,
   value = "",
   variant = "default",
 } = Astro.props;
 const variantClass = variant === "default" ? undefined : `aa-search--${variant}`;
+const text = getStrings(locale);
 ---
-<form class="aa-search-form" action="/medicines" method="get">
-  <label class:list={["aa-search-label", labelHidden && "aa-visually-hidden"]} for={id}>دوّر على دواء</label>
+<form class="aa-search-form" action={localePath(locale, "medicines")} method="get">
+  <label class:list={["aa-search-label", labelHidden && "aa-visually-hidden"]} for={id}>{text.search.label}</label>
   <div class:list={["aa-search", variantClass]}>
     <Icon name="search" />
     <input
@@ -25,10 +30,10 @@ const variantClass = variant === "default" ? undefined : `aa-search--${variant}`
       name="q"
       type="search"
       value={value || undefined}
-      placeholder="دوّر باسم الدواء…"
+      placeholder={text.search.placeholder}
       autocomplete="off"
       inputmode="search"
     />
-    <button class="aa-search__go" type="submit">دوّر</button>
+    <button class="aa-search__go" type="submit">{text.search.submit}</button>
   </div>
 </form>

@@ -1,30 +1,34 @@
 ---
 import StatusTag from "./StatusTag.astro";
+import { localePath, type Locale } from "../lib/i18n";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
+  locale: Locale;
   nameAr: string | null;
   nameEn: string | null;
   priceEgp: number;
   slug: string;
 }
 
-const { nameAr, nameEn, priceEgp, slug } = Astro.props;
-const displayName = nameEn ?? nameAr ?? "دواء";
+const { locale, nameAr, nameEn, priceEgp, slug } = Astro.props;
+const text = getStrings(locale);
+const displayName = nameEn ?? nameAr ?? text.search.fallbackName;
 const displayPrice = Number.isInteger(priceEgp)
   ? String(priceEgp)
   : priceEgp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
 ---
-<a class="aa-prow" href={`/medicines/${slug}`}>
+<a class="aa-prow" href={localePath(locale, "medicines/" + slug)}>
   <div>
     <h3 dir={nameEn ? "ltr" : undefined}>{displayName}</h3>
     {nameAr && <p class="aa-prow__alias">{nameAr}</p>}
     <div class="aa-prow__meta">
-      <span>آخر سعر معروف</span>
-      <StatusTag />
+      <span>{text.medicine.lastKnownPrice}</span>
+      <StatusTag locale={locale} />
     </div>
   </div>
   <div class="aa-prow__p">
     <b>{displayPrice}</b>
-    <small>{" "}ج.م</small>
+      <small>{" "}{text.medicine.currency}</small>
   </div>
 </a>

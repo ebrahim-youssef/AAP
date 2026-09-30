@@ -1,31 +1,7 @@
 ---
-import Base from "../layouts/Base.astro";
-import BranchCard from "../components/BranchCard.astro";
-import ContactActions from "../components/ContactActions.astro";
-import { branches, delivery } from "../data/site";
+import HomePage from "../components/pages/HomePage.astro";
+import { isLocale, type Locale } from "../lib/i18n";
+
+const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
 ---
-<Base home title="صيدليات علي أمين | الرئيسية" description="اعرف آخر معلومة عن الدوا وتواصل مع صيدليات علي أمين في مصر.">
-  <div class="aa-page aa-home">
-    <section class="aa-page__section aa-home__intro" aria-labelledby="who-we-are">
-      <h2 id="who-we-are">مين إحنا</h2>
-      <p>إحنا صيدليات علي أمين، بنسهّل عليك تعرف آخر معلومة معروفة عن الدوا قبل ما تتحرك. دوّر بالاسم، وبعدها اسأل صيدلي عشان نأكد التوفر من الفرع.</p>
-    </section>
-
-    <section class="aa-page__section" aria-labelledby="branches-title">
-      <div class="aa-section-heading">
-        <h2 id="branches-title">الفروع</h2>
-        <a href="/branches">كل الفروع</a>
-      </div>
-      <div class="aa-branch-list">
-        {branches.map((branch) => <BranchCard branch={branch} />)}
-      </div>
-    </section>
-
-    <section class="aa-page__section" aria-labelledby="contact-title">
-      <h2 id="contact-title">اسأل أو اتصل</h2>
-      <ContactActions />
-    </section>
-
-    {delivery.available && <p class="aa-delivery-line">فيه توصيل، اطلب على واتساب</p>}
-  </div>
-</Base>
+<HomePage locale={locale} />

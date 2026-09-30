@@ -1,0 +1,208 @@
+---
+import Base from "../../layouts/Base.astro";
+import SearchField from "../SearchField.astro";
+import { whatsapp } from "../../data/site";
+import { getStrings } from "../../i18n/strings";
+import { localePath, type Locale } from "../../lib/i18n";
+import { whatsappHref } from "../../lib/contact";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = getStrings(locale);
+const query = Astro.url.searchParams.get("q") ?? "";
+const askUrl = whatsappHref(whatsapp, text.contact.pharmacistMessage);
+const medicineBasePath = localePath(locale, "medicines");
+---
+<Base title={text.search.pageTitle} description={text.search.pageDescription}>
+  <div
+    class="aa-page aa-search-page"
+    data-medicine-search
+    data-medicine-base={medicineBasePath}
+    data-search-count-template={text.search.resultCount}
+    data-search-error={text.search.error}
+    data-search-fallback={text.search.fallbackName}
+    data-search-last-known={text.medicine.lastKnownPrice}
+    data-search-status={text.status.check}
+    data-currency={text.medicine.currency}
+  >
+    <h1>{text.search.title}</h1>
+    <section class="aa-page__section aa-search-page" aria-label={text.search.title}>
+      <SearchField id="medicine-page-search" labelHidden={true} value={query} locale={locale} />
+      <p class="aa-search-no-js">{text.search.noJavaScript} {askUrl ? <a href={askUrl}>{text.search.askWhatsApp}</a> : text.search.askWhatsApp}.</p>
+      <p class="aa-search-status" data-search-count aria-live="polite" hidden></p>
+      <div class="aa-search-results" data-search-results></div>
+      <p class="aa-search-empty" data-search-help hidden>{text.search.help} {text.search.empty} {askUrl ? <a href={askUrl}>{text.search.askWhatsApp}</a> : text.search.askWhatsApp}.</p>
+      <p class="aa-search-empty" data-search-empty hidden>{text.search.empty} {askUrl ? <a href={askUrl}>{text.search.askWhatsApp}</a> : text.search.askWhatsApp}.</p>
+    </section>
+  </div>
+</Base>
+
+<script>
+  import type { IndexEntry } from "../../lib/medicines";
+  import { normalize, search, searchShardKey } from "../../lib/search";
+
+  type SearchMeta = { shards: string[] };
+  type SearchShard = {
+    namesAr: (string | null)[];
+    namesEn: (string | null)[];
+    prices: number[];
+    slugs: string[];
+  };
+
+  const root = document.querySelector("[data-medicine-search]");
+  const input = root?.querySelector("input[name='q']");
+  const noJsMessage = root?.querySelector(".aa-search-no-js");
+  const countMessage = root?.querySelector("[data-search-count]");
+  const resultsContainer = root?.querySelector("[data-search-results]");
+  const helpMessage = root?.querySelector("[data-search-help]");
+  const emptyMessage = root?.querySelector("[data-search-empty]");
+  const medicineBasePath = root instanceof HTMLElement ? root.dataset.medicineBase ?? "" : "";
+  const currencyLabel = root instanceof HTMLElement ? root.dataset.currency ?? "" : "";
+  const resultCountTemplate = root instanceof HTMLElement ? root.dataset.searchCountTemplate ?? "" : "";
+  const searchError = root instanceof HTMLElement ? root.dataset.searchError ?? "" : "";
+  const fallbackName = root instanceof HTMLElement ? root.dataset.searchFallback ?? "" : "";
+  const lastKnownPrice = root instanceof HTMLElement ? root.dataset.searchLastKnown ?? "" : "";
+  const needsConfirmation = root instanceof HTMLElement ? root.dataset.searchStatus ?? "" : "";
+  let metaPromise: Promise<SearchMeta> | undefined;
+  const shardCache = new Map<string, Promise<IndexEntry[]>>();
+  let renderVersion = 0;
+
+  if (
+    input instanceof HTMLInputElement &&
+    noJsMessage instanceof HTMLElement &&
+    countMessage instanceof HTMLElement &&
+    resultsContainer instanceof HTMLElement &&
+    helpMessage instanceof HTMLElement &&
+    emptyMessage instanceof HTMLElement
+  ) {
+    noJsMessage.hidden = true;
+
+    const loadMeta = () => {
+      metaPromise ??= fetch("/search/meta.json").then((response) => {
+        if (!response.ok) throw new Error("Unable to load search metadata");
+        return response.json();
+      });
+      return metaPromise;
+    };
+
+    const loadShard = (key: string) => {
+      const cached = shardCache.get(key);
+      if (cached) return cached;
+      const request = fetch("/search/" + encodeURIComponent(key) + ".json").then((response) => {
+        if (!response.ok) throw new Error("Unable to load search shard");
+        return response.json().then((payload: SearchShard) =>
+          payload.slugs.map((slug, index) => [
+            slug,
+            payload.namesEn[index],
+            payload.namesAr[index],
+            payload.prices[index],
+          ] as IndexEntry),
+        );
+      });
+      shardCache.set(key, request);
+      return request;
+    };
+
+    const renderEntry = (entry: IndexEntry) => {
+      const [slug, nameEn, nameAr, priceEgp] = entry;
+      const link = document.createElement("a");
+      link.className = "aa-prow";
+      link.href = medicineBasePath + "/" + encodeURIComponent(slug);
+
+      const details = document.createElement("div");
+      const heading = document.createElement("h3");
+      if (nameEn) heading.dir = "ltr";
+      heading.textContent = nameEn ?? nameAr ?? fallbackName;
+      details.append(heading);
+
+      if (nameAr) {
+        const alias = document.createElement("p");
+        alias.className = "aa-prow__alias";
+        alias.dir = "rtl";
+        alias.textContent = nameAr;
+        details.append(alias);
+      }
+
+      const meta = document.createElement("div");
+      meta.className = "aa-prow__meta";
+      const lastKnown = document.createElement("span");
+      lastKnown.textContent = lastKnownPrice;
+      const status = document.createElement("span");
+      status.className = "aa-tag aa-tag--check";
+      status.textContent = needsConfirmation;
+      meta.append(lastKnown, status);
+      details.append(meta);
+
+      const price = document.createElement("div");
+      price.className = "aa-prow__p";
+      const amount = document.createElement("b");
+      amount.textContent = Number.isInteger(priceEgp)
+        ? String(priceEgp)
+        : priceEgp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+      const currency = document.createElement("small");
+      currency.textContent = " " + currencyLabel;
+      price.append(amount, currency);
+
+      link.append(details, price);
+      return link;
+    };
+
+    const renderQuery = async (value: string) => {
+      const version = ++renderVersion;
+      const normalized = normalize(value);
+      resultsContainer.replaceChildren();
+      countMessage.hidden = true;
+      helpMessage.hidden = true;
+      emptyMessage.hidden = true;
+      if (normalized.length < 2) return;
+
+      const key = searchShardKey(value);
+      if (key === null) {
+        helpMessage.hidden = false;
+        return;
+      }
+
+      try {
+        const meta = await loadMeta();
+        if (!meta.shards.includes(key)) {
+          emptyMessage.hidden = false;
+          return;
+        }
+
+        const loaded = [await loadShard(key)];
+        if (version !== renderVersion) return;
+
+        const uniqueEntries = new Map<string, IndexEntry>();
+        for (const shard of loaded) {
+          for (const entry of shard) uniqueEntries.set(entry[0], entry);
+        }
+        const matches = search([...uniqueEntries.values()], value, 30);
+        if (matches.length === 0) {
+          emptyMessage.hidden = false;
+          return;
+        }
+
+        countMessage.textContent = resultCountTemplate.replace("{{count}}", String(matches.length));
+        countMessage.hidden = false;
+        for (const entry of matches) resultsContainer.append(renderEntry(entry));
+      } catch {
+        if (version !== renderVersion) return;
+        countMessage.textContent = searchError;
+        countMessage.hidden = false;
+      }
+    };
+
+    let debounceTimer: number | undefined;
+    input.addEventListener("input", () => {
+      window.clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => void renderQuery(input.value), 150);
+    });
+
+    const initialQuery = new URLSearchParams(window.location.search).get("q") ?? "";
+    input.value = initialQuery;
+    if (initialQuery) void renderQuery(initialQuery);
+  }
+</script>

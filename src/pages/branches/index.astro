@@ -1,16 +1,7 @@
 ---
-import Base from "../../layouts/Base.astro";
-import BranchCard from "../../components/BranchCard.astro";
-import { branches } from "../../data/site";
+import BranchListPage from "../../components/pages/BranchListPage.astro";
+import { isLocale, type Locale } from "../../lib/i18n";
+
+const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
 ---
-<Base title="الفروع | صيدليات علي أمين" description="عناوين ومعلومات فروع صيدليات علي أمين.">
-  <div class="aa-page">
-    <h1>الفروع</h1>
-    <section class="aa-page__section" aria-labelledby="branches-list-title">
-      <h2 id="branches-list-title">اختار الفرع</h2>
-      <div class="aa-branch-list">
-        {branches.map((branch) => <BranchCard branch={branch} />)}
-      </div>
-    </section>
-  </div>
-</Base>
+<BranchListPage locale={locale} />

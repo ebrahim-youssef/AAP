@@ -3,36 +3,63 @@ import "../styles/global.css";
 import AppHeader from "../components/AppHeader.astro";
 import Footer from "../components/Footer.astro";
 import TabBar from "../components/TabBar.astro";
+import { getStrings } from "../i18n/strings";
+import { isLocale, unlocalizedPath, type Locale } from "../lib/i18n";
+import { absoluteLocaleUrl } from "../lib/site-url";
+import { serializeJsonLd } from "../lib/seo";
 
 interface Props {
-  description?: string;
+  description: string;
   home?: boolean;
+  jsonLd?: unknown;
   title: string;
 }
 
 const {
-  description = "صيدليات علي أمين في مصر",
+  description,
   home = false,
+  jsonLd,
   title,
 } = Astro.props;
 const currentPath = Astro.url.pathname;
+const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
+const text = getStrings(locale);
+const pagePath = unlocalizedPath(currentPath);
+const canonicalUrl = absoluteLocaleUrl(Astro.site, locale, pagePath);
+const alternateUrls = {
+  ar: absoluteLocaleUrl(Astro.site, "ar", pagePath),
+  en: absoluteLocaleUrl(Astro.site, "en", pagePath),
+  "x-default": absoluteLocaleUrl(Astro.site, "ar", pagePath),
+};
+const jsonLdText = jsonLd === undefined ? null : serializeJsonLd(jsonLd);
 ---
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="ar" href={alternateUrls.ar} />
+    <link rel="alternate" hreflang="en" href={alternateUrls.en} />
+    <link rel="alternate" hreflang="x-default" href={alternateUrls["x-default"]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={locale === "ar" ? "ar_EG" : "en_EG"} />
+    <meta property="og:site_name" content={text.brandName} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
+    {jsonLdText && <script type="application/ld+json" set:html={jsonLdText}></script>}
+    <!-- Cloudflare Web Analytics placeholder: the deploy token is added later. -->
   </head>
   <body class="aa-root">
-    <a class="aa-skip-link" href="#main-content">تخطى للمحتوى</a>
-    <AppHeader currentPath={currentPath} home={home} />
+    <a class="aa-skip-link" href="#main-content">{text.skipToContent}</a>
+    <AppHeader currentPath={pagePath} home={home} locale={locale} />
     <main id="main-content"><slot /></main>
-    <Footer />
-    <TabBar currentPath={currentPath} />
+    <Footer locale={locale} />
+    <TabBar currentPath={pagePath} locale={locale} />
   </body>
 </html>

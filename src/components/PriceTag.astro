@@ -1,9 +1,11 @@
 ---
 import StatusTag from "./StatusTag.astro";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
   currency?: string;
   label?: string;
+  locale: "ar" | "en";
   price: number;
   size?: "lg" | "md";
   status?: "check" | "confirmed" | "unavailable";
@@ -12,14 +14,16 @@ interface Props {
 }
 
 const {
-  currency = "ج.م",
-  label = "آخر سعر معروف",
+  currency,
+  label,
+  locale,
   price,
   size = "lg",
   status = "check",
   statusLabel,
   updatedAt,
 } = Astro.props;
+const text = getStrings(locale);
 const displayPrice = Number.isInteger(price)
   ? String(price)
   : price.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
@@ -27,13 +31,13 @@ const displayPrice = Number.isInteger(price)
 <div class:list={["aa-price", size === "md" && "aa-price--md"]}>
   <div class="aa-price__top">
     <div>
-      <small>{label}</small>
+      <small>{label ?? text.medicine.lastKnownPrice}</small>
       <b>{displayPrice}</b>
     </div>
-    <span>{" "}{currency}</span>
+    <span>{" "}{currency ?? text.medicine.currency}</span>
   </div>
   <div class="aa-rail">
     <span>{updatedAt}</span>
-    <StatusTag status={status} label={statusLabel} rail={true} />
+    <StatusTag status={status} label={statusLabel} rail={true} locale={locale} />
   </div>
 </div>

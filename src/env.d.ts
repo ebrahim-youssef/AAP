@@ -3,6 +3,7 @@
 interface AapD1PreparedStatement {
   bind(...values: unknown[]): AapD1PreparedStatement;
   first<T = Record<string, unknown>>(columnName?: string): Promise<T | null>;
+  all<T = Record<string, unknown>>(): Promise<{ results: T[] }>;
 }
 
 interface AapD1Database {

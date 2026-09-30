@@ -1,0 +1,91 @@
+---
+import Base from "../../layouts/Base.astro";
+import ContactActions from "../ContactActions.astro";
+import FactList from "../FactList.astro";
+import Notice from "../Notice.astro";
+import PriceTag from "../PriceTag.astro";
+import NotFoundContent from "../NotFoundContent.astro";
+import { getStrings, interpolate } from "../../i18n/strings";
+import { localePath, type Locale } from "../../lib/i18n";
+import type { MedicineRow } from "../../lib/medicine-page";
+import { buildMedicineJsonLd } from "../../lib/seo";
+
+interface Props {
+  asOf: string;
+  locale: Locale;
+  row: MedicineRow | null;
+  slug: string;
+}
+
+const { asOf, locale, row, slug } = Astro.props;
+const text = getStrings(locale);
+const medicineName = row?.name_en ?? row?.name_ar ?? slug ?? text.search.fallbackName;
+const displayPrice = row
+  ? Number.isInteger(row.price_egp)
+    ? String(row.price_egp)
+    : row.price_egp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")
+  : "";
+const [year, month] = asOf.split("-");
+const asOfLabel = text.months[Number(month) - 1]
+  ? text.months[Number(month) - 1] + " " + year
+  : asOf;
+const title = row
+  ? interpolate(text.medicine.title, { name: medicineName })
+  : text.medicine.missingPageTitle;
+const description = row
+  ? interpolate(text.medicine.description, { name: medicineName, price: displayPrice, asOf: asOfLabel })
+  : text.medicine.missingPageDescription;
+---
+<Base
+  title={title}
+  description={description}
+  jsonLd={row ? buildMedicineJsonLd({
+    slug,
+    nameEn: row.name_en,
+    nameAr: row.name_ar,
+    manufacturer: row.manufacturer,
+    priceEgp: row.price_egp,
+  }, locale, Astro.site) : undefined}
+>
+  {row ? (
+    <div class="aa-page aa-medicine-page">
+      <p class="aa-medicine-back"><a href={localePath(locale, "medicines")}>{text.medicine.searchBack}</a></p>
+      <h1 dir={row.name_en ? "ltr" : undefined}>{medicineName}</h1>
+      {row.name_ar && <p class="aa-medicine-alias">{row.name_ar}</p>}
+
+      <section class="aa-page__section" aria-labelledby="medicine-price-title">
+        <h2 id="medicine-price-title">{text.medicine.priceAndAvailability}</h2>
+        <PriceTag price={row.price_egp} updatedAt={interpolate(text.medicine.asOfList, { asOf: asOfLabel })} locale={locale} />
+        <p class="aa-medicine-known">{text.medicine.knownNotLive}</p>
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-facts-title">
+        <h2 id="medicine-facts-title">{text.medicine.information}</h2>
+        <FactList
+          items={[
+            { label: text.medicine.activeIngredient, value: row.scientific ?? text.missingData, ltr: true },
+            { label: text.medicine.manufacturer, value: row.manufacturer ?? text.missingData, ltr: true },
+            { label: text.medicine.form, value: row.route ?? text.missingData, ltr: true },
+            { label: text.medicine.classification, value: row.drug_class ?? text.missingData, ltr: true },
+          ]}
+        />
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-contact-title">
+        <h2 id="medicine-contact-title">{text.medicine.confirmAvailability}</h2>
+        <ContactActions medicineName={medicineName} locale={locale} />
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-notices-title">
+        <h2 id="medicine-notices-title">{text.medicine.importantNotices}</h2>
+        <div class="aa-medicine-notices">
+          <Notice>{text.medicine.noticePrice}</Notice>
+          <Notice>{text.medicine.noticeMedical}</Notice>
+          <Notice>{text.medicine.noticePrescription}</Notice>
+        </div>
+      </section>
+    </div>
+  ) : (
+    <NotFoundContent locale={locale} medicine={true} />
+  )}
+</Base>

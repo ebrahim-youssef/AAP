@@ -1,0 +1,14 @@
+---
+import BranchDetailPage from "../../../components/pages/BranchDetailPage.astro";
+import { branches } from "../../../data/site";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return branches.map((branch) => ({
+    params: { slug: branch.slug },
+    props: { branch },
+  }));
+}
+---
+<BranchDetailPage branch={Astro.props.branch} locale="en" />

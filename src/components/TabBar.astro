@@ -2,22 +2,26 @@
 import Icon from "./Icon.astro";
 import { whatsappHref } from "../lib/contact";
 import { whatsapp } from "../data/site";
+import { localePath, type Locale } from "../lib/i18n";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
   currentPath: string;
+  locale: Locale;
 }
 
-const { currentPath } = Astro.props;
-const pharmacistHref = whatsappHref(whatsapp, "عايز أسأل صيدلي") ?? "/branches";
+const { currentPath, locale } = Astro.props;
+const text = getStrings(locale);
+const pharmacistHref = whatsappHref(whatsapp, text.contact.pharmacistMessage) ?? localePath(locale, "branches");
 type TabIcon = "house" | "search" | "message-circle" | "map-pin";
 const tabs: Array<{ label: string; href: string; icon: TabIcon; active: boolean }> = [
-  { label: "الرئيسية", href: "/", icon: "house", active: currentPath === "/" },
-  { label: "بحث", href: "/medicines", icon: "search", active: currentPath.startsWith("/medicines") },
-  { label: "صيدلي", href: pharmacistHref, icon: "message-circle", active: false },
-  { label: "الفروع", href: "/branches", icon: "map-pin", active: currentPath.startsWith("/branches") },
+  { label: text.nav.home, href: localePath(locale, "/"), icon: "house", active: currentPath === localePath(locale, "/") },
+  { label: text.nav.medicines, href: localePath(locale, "medicines"), icon: "search", active: currentPath.startsWith(localePath(locale, "medicines")) },
+  { label: text.nav.pharmacist, href: pharmacistHref, icon: "message-circle", active: false },
+  { label: text.nav.branches, href: localePath(locale, "branches"), icon: "map-pin", active: currentPath.startsWith(localePath(locale, "branches")) },
 ];
 ---
-<nav class="aa-tabs" aria-label="التنقل الرئيسي">
+<nav class="aa-tabs" aria-label={text.nav.main}>
   {tabs.map((tab) => (
     <a class:list={{ "aa-tabs__link": true, on: tab.active }} href={tab.href} aria-current={tab.active ? "page" : undefined}>
       <Icon name={tab.icon} />

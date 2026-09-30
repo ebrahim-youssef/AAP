@@ -1,0 +1,22 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getStrings } from "../../i18n/strings";
+import type { Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = getStrings(locale);
+---
+<Base title={text.about.title} description={text.about.description}>
+  <div class="aa-page">
+    <h1>{text.about.title}</h1>
+    <section class="aa-page__section aa-copy" aria-labelledby="about-title">
+      <h2 id="about-title">{text.about.heading}</h2>
+      <p>{text.about.first}</p>
+      <p>{text.about.second}</p>
+    </section>
+  </div>
+</Base>

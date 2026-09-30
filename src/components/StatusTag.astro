@@ -1,16 +1,14 @@
 ---
 interface Props {
   label?: string;
+  locale: "ar" | "en";
   rail?: boolean;
   status?: "check" | "confirmed" | "unavailable" | "info";
 }
 
-const { label, rail = false, status = "check" } = Astro.props;
-const labels = {
-  check: "يلزم تأكيد",
-  confirmed: "متأكدين",
-  unavailable: "مش متاح",
-  info: "معلومة",
-};
+import { getStrings } from "../i18n/strings";
+
+const { label, locale, rail = false, status = "check" } = Astro.props;
+const labels = getStrings(locale).status;
 ---
 <span class:list={["aa-tag", `aa-tag--${status}`, rail && "aa-rail__status", rail && `aa-rail__status--${status}`]}>{label ?? labels[status]}</span>

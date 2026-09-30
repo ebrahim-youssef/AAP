@@ -71,6 +71,17 @@ body {
   display: none;
 }
 
+.aa-language-switch {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-min);
+  color: rgba(255, 255, 255, .9);
+  font-size: var(--text-small);
+  font-weight: var(--weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
 .aa-page {
   width: 100%;
   max-width: 800px;
@@ -217,13 +228,28 @@ body {
 
 .aa-prow__alias {
   direction: rtl;
-  text-align: right;
+  text-align: start;
 }
 
 .aa-prow h3[dir="ltr"],
 .aa-medicine-page h1[dir="ltr"],
 .aa-facts dd[dir="ltr"] {
-  text-align: right;
+  text-align: end;
+}
+
+html[dir="ltr"] .aa-prow h3[dir="ltr"],
+html[dir="ltr"] .aa-medicine-page h1[dir="ltr"],
+html[dir="ltr"] .aa-facts dd[dir="ltr"] {
+  text-align: start;
+}
+
+/* The copied design-system row uses a physical left alignment for its price. */
+.aa-prow__p {
+  text-align: end;
+}
+
+html[dir="ltr"] .aa-prow__p {
+  text-align: start;
 }
 
 .aa-medicine-back {
@@ -546,6 +572,7 @@ body {
 
 .aa-tabs__link:focus-visible,
 .aa-header-nav a:focus-visible,
+.aa-language-switch:focus-visible,
 .aa-site-footer a:focus-visible,
 .aa-section-heading a:focus-visible,
 .aa-facts a:focus-visible,
@@ -573,6 +600,10 @@ body {
     align-items: center;
     gap: var(--space-5);
     margin-inline-start: auto;
+  }
+
+  .aa-language-switch {
+    margin-inline-start: var(--space-5);
   }
 
   .aa-header-nav a {

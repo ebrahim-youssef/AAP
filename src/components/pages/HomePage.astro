@@ -1,0 +1,46 @@
+---
+import Base from "../../layouts/Base.astro";
+import BranchCard from "../BranchCard.astro";
+import ContactActions from "../ContactActions.astro";
+import { branches, delivery } from "../../data/site";
+import { getStrings } from "../../i18n/strings";
+import { localePath, type Locale } from "../../lib/i18n";
+import { buildHomeJsonLd } from "../../lib/seo";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = getStrings(locale);
+---
+<Base
+  home
+  title={text.home.title}
+  description={text.home.description}
+  jsonLd={buildHomeJsonLd(branches, locale, Astro.site)}
+>
+  <div class="aa-page aa-home">
+    <section class="aa-page__section aa-home__intro" aria-labelledby="who-we-are">
+      <h2 id="who-we-are">{text.home.whoWeAre}</h2>
+      <p>{text.home.intro}</p>
+    </section>
+
+    <section class="aa-page__section" aria-labelledby="branches-title">
+      <div class="aa-section-heading">
+        <h2 id="branches-title">{text.home.branches}</h2>
+        <a href={localePath(locale, "branches")}>{text.home.allBranches}</a>
+      </div>
+      <div class="aa-branch-list">
+        {branches.map((branch) => <BranchCard branch={branch} locale={locale} />)}
+      </div>
+    </section>
+
+    <section class="aa-page__section" aria-labelledby="contact-title">
+      <h2 id="contact-title">{text.home.contact}</h2>
+      <ContactActions locale={locale} />
+    </section>
+
+    {delivery.available && <p class="aa-delivery-line">{text.home.delivery}</p>}
+  </div>
+</Base>

@@ -1,0 +1,10 @@
+---
+import Base from "../layouts/Base.astro";
+import NotFoundContent from "../components/NotFoundContent.astro";
+import { getStrings } from "../i18n/strings";
+
+const text = getStrings("ar");
+---
+<Base title={text.notFound.title} description={text.notFound.description}>
+  <NotFoundContent locale="ar" showEnglishHome={true} />
+</Base>

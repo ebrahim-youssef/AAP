@@ -109,6 +109,7 @@ async function main(): Promise<void> {
   }
 
   const sqlPath = resolve(projectRoot, "data/medicines.sql");
+  const medicineSlugsPath = resolve(projectRoot, "data/medicine-slugs.json");
   const searchDir = resolve(projectRoot, "public/search");
   const oldIndexPath = resolve(projectRoot, "public/search-index.json");
   await mkdir(dirname(sqlPath), { recursive: true });
@@ -116,6 +117,11 @@ async function main(): Promise<void> {
   await rm(searchDir, { recursive: true, force: true });
   await mkdir(searchDir, { recursive: true });
   await writeFile(sqlPath, toSql(result.medicines, asOf), "utf8");
+  await writeFile(
+    medicineSlugsPath,
+    JSON.stringify(result.medicines.map((medicine) => medicine.slug).sort()),
+    "utf8",
+  );
 
   const shardItems = new Map<string, typeof result.index>();
   for (const entry of result.index) {
