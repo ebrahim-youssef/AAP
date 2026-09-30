@@ -182,6 +182,10 @@ export function normalize(text: string): string {
     .replace(/\s+/g, " ");
 }
 
+function arabicSkeleton(token: string): string {
+  return /\p{Script=Arabic}/u.test(token) ? token.replace(/[اوي]/g, "") : token;
+}
+
 export function shardKeyForNormalizedToken(token: string): string | null {
   if (
     token.length === 0 ||
@@ -191,7 +195,8 @@ export function shardKeyForNormalizedToken(token: string): string | null {
     return null;
   }
 
-  const characters = [...token];
+  const skeleton = arabicSkeleton(token);
+  const characters = [...(skeleton.length >= 2 ? skeleton : token)];
   if (
     characters.length < 2 ||
     !/^[a-z\p{Script=Arabic}]/u.test(characters[0])
@@ -209,10 +214,6 @@ export function searchShardKey(query: string): string | null {
     if (key !== null) return key;
   }
   return null;
-}
-
-function arabicSkeleton(token: string): string {
-  return /\p{Script=Arabic}/u.test(token) ? token.replace(/[اوي]/g, "") : token;
 }
 
 function everyTokenHasPrefix(queryTokens: string[], nameTokens: string[]): boolean {

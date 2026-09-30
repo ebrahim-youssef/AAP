@@ -1,12 +1,38 @@
 import { describe, expect, it } from "vitest";
 import type { IndexEntry } from "../../src/lib/medicines";
-import { normalize, search, searchShardKey } from "../../src/lib/search";
+import {
+  normalize,
+  search,
+  searchShardKey,
+  shardKeyForNormalizedToken,
+} from "../../src/lib/search";
 
 const entries: IndexEntry[] = [
   ["panadol-advance", "PANADOL ADVANCE 500 MG", "بانادول أدفانسي", 46],
   ["panadol-other-place", "OTHER BRAND", "دواء بانادول", 30],
   ["aspirin", "ASPIRIN 100 MG", "أسبرين", 15],
 ];
+
+function buildShards(entriesToShard: IndexEntry[]): Map<string, IndexEntry[]> {
+  const shards = new Map<string, IndexEntry[]>();
+  for (const entry of entriesToShard) {
+    const keys = new Set<string>();
+    for (const name of [entry[1], entry[2]]) {
+      if (name === null) continue;
+      for (const token of normalize(name).split(" ")) {
+        const key = shardKeyForNormalizedToken(token);
+        if (key !== null) keys.add(key);
+      }
+    }
+
+    for (const key of keys) {
+      const shard = shards.get(key) ?? [];
+      shard.push(entry);
+      shards.set(key, shard);
+    }
+  }
+  return shards;
+}
 
 describe("normalize", () => {
   it("folds Arabic variants, strips marks and tatweel, and converts digits", () => {
@@ -49,5 +75,21 @@ describe("search", () => {
   it("chooses a two-character shard from a searchable token", () => {
     expect(searchShardKey("panadol 500")).toBe("pa");
     expect(searchShardKey("500 mg")).toBeNull();
+  });
+
+  it("selects the same skeleton shard that the importer builds", () => {
+    const panadol: IndexEntry = [
+      "panadol",
+      "PANADOL 500 MG",
+      "بانادول",
+      46,
+    ];
+    const shards = buildShards([panadol]);
+
+    for (const query of ["بنادول", "بانادول", "باندول", "panadol"]) {
+      const key = searchShardKey(query);
+      const shard = key === null ? [] : shards.get(key) ?? [];
+      expect(search(shard, query)).toContainEqual(panadol);
+    }
   });
 });
