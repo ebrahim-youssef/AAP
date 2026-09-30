@@ -1,0 +1,9 @@
+/* Source: ali-amin-pharmacies-design-system/project/tokens/spacing.css */
+:root{
+--space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-7:32px;--space-8:48px;--space-9:72px;
+--gutter-mobile:16px;--gutter-desktop:40px;--content-max:1120px;
+--touch-min:44px;--control-h:52px;--control-h-sm:40px;--header-branch-h:36px;--tabbar-h:74px;--band-h:8px;--edge-h:4px;
+--radius-tag:4px;--radius-control:10px;--radius-sheet:18px;--radius-round:999px;
+--shadow-sheet:0 -8px 24px rgba(8,45,92,.12);--shadow-desktop-panel:0 12px 40px rgba(8,45,92,.12);
+--motion-fast:140ms /* @kind other */;--motion-standard:200ms /* @kind other */;--motion-enter:280ms /* @kind other */;--ease-standard:cubic-bezier(.2,0,0,1) /* @kind other */;
+}

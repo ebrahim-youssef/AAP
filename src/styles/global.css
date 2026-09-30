@@ -1,0 +1,77 @@
+@import "./typography.css";
+@import "./colors.css";
+@import "./spacing.css";
+@import "./components.css";
+
+html {
+  background: var(--surface-page);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--surface-page);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.aa-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.aa-root main {
+  flex: 1;
+}
+
+.aa-brandlockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.aa-brandlockup .aa-logo {
+  width: 48px;
+  height: 68px;
+  color: #fff;
+}
+
+.aa-site-footer {
+  padding: 24px 16px;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: var(--text-small);
+  text-align: center;
+}
+
+.aa-page-placeholder {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: var(--space-8) var(--gutter-mobile);
+}
+
+.aa-page-placeholder h1 {
+  margin: 0;
+  color: var(--text-brand);
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  font-weight: var(--weight-heavy);
+}
+
+.aa-page-placeholder p {
+  margin: var(--space-4) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+@media (min-width: 768px) {
+  .aa-page-placeholder {
+    padding-inline: var(--gutter-desktop);
+  }
+
+  .aa-site-footer {
+    padding-inline: var(--gutter-desktop);
+  }
+}
