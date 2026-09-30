@@ -12,7 +12,7 @@
       "binding": "DB",
       "database_name": "aap",
       // The real database id is set at deploy.
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "adbea401-d5c5-40d6-8d60-87fdb9883c67"
     }
   ]
 }

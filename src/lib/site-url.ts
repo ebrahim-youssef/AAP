@@ -16,3 +16,7 @@ export function absoluteLocaleUrl(
 ): string {
   return absoluteSiteUrl(site, localePath(locale, path));
 }
+
+// Preview mode: keep search engines out until the real domain and branch
+// details are in. Set to true at launch.
+export const indexable = false;
