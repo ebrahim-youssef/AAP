@@ -20,14 +20,14 @@ const dialogId = "branch-call-dialog";
 <div class="aa-contact-actions">
   <div class="aa-contact-action">
     {whatsappUrl ? (
-      <a class="aa-btn aa-btn--primary" href={whatsappUrl}>{text.contact.askWhatsApp}</a>
+      <a class="aa-btn aa-btn--primary aa-btn--block" href={whatsappUrl}>{text.contact.askWhatsApp}</a>
     ) : (
-      <button class="aa-btn aa-btn--primary" type="button" disabled aria-describedby="whatsapp-missing">{text.contact.askWhatsApp}</button>
+      <button class="aa-btn aa-btn--primary aa-btn--block" type="button" disabled aria-describedby="whatsapp-missing">{text.contact.askWhatsApp}</button>
     )}
     {!whatsappUrl && <span id="whatsapp-missing" class="aa-contact-missing">{text.missingData}</span>}
   </div>
   <a
-    class="aa-btn aa-btn--secondary"
+    class="aa-btn aa-btn--secondary aa-btn--block"
     href={localePath(locale, "branches")}
     aria-haspopup="dialog"
     aria-controls={dialogId}

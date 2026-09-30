@@ -1,5 +1,3 @@
-import { strings } from "../i18n/strings";
-
 export interface Branch {
   slug: string;
   nameAr: string;
@@ -11,7 +9,7 @@ export interface Branch {
   deliveryAr: string | null;
 }
 
-export interface Delivery {
+interface Delivery {
   available: boolean;
   areasAr: string | null;
   feeAr: string | null;
@@ -50,5 +48,3 @@ export const delivery: Delivery = {
   feeAr: null,
   hoursAr: null,
 };
-
-export const missingData = strings.ar.missingData;

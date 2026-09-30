@@ -55,7 +55,7 @@ export function buildBranchJsonLd(
   return branchJsonLd(branch, locale, site, true);
 }
 
-export interface MedicineJsonLdInput {
+interface MedicineJsonLdInput {
   slug: string;
   nameEn: string | null;
   nameAr: string | null;

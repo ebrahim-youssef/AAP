@@ -2,6 +2,7 @@ import {
   buildMedicineUrlset,
   medicineSitemapFileCount,
   MEDICINE_SITEMAP_PAGE_SIZE,
+  sitemapResponse,
 } from "../../lib/sitemap";
 import { readMedicineSlugs } from "../../lib/medicine-slugs";
 import { requireSite } from "../../lib/site-url";
@@ -32,13 +33,5 @@ export async function GET({
   props: Props;
   site: URL | undefined;
 }): Promise<Response> {
-  return new Response(
-    buildMedicineUrlset(requireSite(site), props.slugs),
-    {
-      headers: {
-        "Cache-Control": "public, max-age=3600, s-maxage=86400",
-        "Content-Type": "application/xml; charset=utf-8",
-      },
-    },
-  );
+  return sitemapResponse(buildMedicineUrlset(requireSite(site), props.slugs));
 }

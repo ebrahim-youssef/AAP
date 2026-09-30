@@ -73,6 +73,7 @@ describe("buildMedicines", () => {
     const result = buildMedicines(fixture);
 
     expect(result.medicines).toHaveLength(7);
+    expect(result.duplicatesDropped).toBe(1);
     expect(result.medicines.filter((medicine) => medicine.nameEn === "Panadol Extra").map((medicine) => medicine.slug)).toEqual([
       "panadol-extra-5aeec9fd",
       "panadol-extra-7b84f75f",

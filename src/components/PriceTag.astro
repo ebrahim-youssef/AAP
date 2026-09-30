@@ -1,6 +1,7 @@
 ---
 import StatusTag from "./StatusTag.astro";
 import { getStrings } from "../i18n/strings";
+import { formatPrice } from "../lib/format-price";
 
 interface Props {
   currency?: string;
@@ -24,9 +25,7 @@ const {
   updatedAt,
 } = Astro.props;
 const text = getStrings(locale);
-const displayPrice = Number.isInteger(price)
-  ? String(price)
-  : price.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+const displayPrice = formatPrice(price);
 ---
 <div class:list={["aa-price", size === "md" && "aa-price--md"]}>
   <div class="aa-price__top">

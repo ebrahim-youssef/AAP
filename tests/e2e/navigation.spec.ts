@@ -1,15 +1,5 @@
 import { expect, test } from "@playwright/test";
-
-const pagePaths = [
-  "/",
-  "/medicines",
-  "/branches",
-  "/branches/branch-1",
-  "/branches/branch-2",
-  "/about",
-  "/terms",
-  "/privacy",
-];
+import { staticRoutes } from "../fixtures/routes";
 
 const destinations = ["/", "/medicines", "/branches", "/about", "/terms", "/privacy"];
 
@@ -20,7 +10,7 @@ for (const viewport of [
   test.describe(`${viewport.name} navigation`, () => {
     test.use({ viewport });
 
-    for (const path of pagePaths) {
+    for (const path of staticRoutes) {
       test(`${path} exposes every site destination`, async ({ page }) => {
         await page.goto(path);
 

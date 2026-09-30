@@ -42,6 +42,7 @@ const medicineBasePath = localePath(locale, "medicines");
 
 <script>
   import type { IndexEntry } from "../../lib/medicines";
+  import { formatPrice } from "../../lib/format-price";
   import { normalize, search, searchShardKey } from "../../lib/search";
 
   type SearchMeta = { shards: string[] };
@@ -139,9 +140,7 @@ const medicineBasePath = localePath(locale, "medicines");
       const price = document.createElement("div");
       price.className = "aa-prow__p";
       const amount = document.createElement("b");
-      amount.textContent = Number.isInteger(priceEgp)
-        ? String(priceEgp)
-        : priceEgp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+      amount.textContent = formatPrice(priceEgp);
       const currency = document.createElement("small");
       currency.textContent = " " + currencyLabel;
       price.append(amount, currency);

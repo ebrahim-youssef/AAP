@@ -1,6 +1,6 @@
 import type { Locale } from "../lib/i18n";
 
-export interface Strings {
+interface Strings {
   brandName: string;
   months: string[];
   missingData: string;
@@ -136,7 +136,7 @@ export interface Strings {
   };
 }
 
-export const strings: Record<Locale, Strings> = {
+const strings: Record<Locale, Strings> = {
   ar: {
     brandName: "صيدليات علي أمين",
     months: ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"],

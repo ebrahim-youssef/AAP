@@ -1,17 +1,8 @@
 import { expect, request as playwrightRequest, test } from "@playwright/test";
+import { staticRoutes } from "../fixtures/routes";
 
 const origin = "https://aap.example";
 const medicinePath = "/medicines/panadol-advance-500-mg-24-f-c-tabs";
-const staticRoutes = [
-  "/",
-  "/medicines",
-  "/branches",
-  "/branches/branch-1",
-  "/branches/branch-2",
-  "/about",
-  "/terms",
-  "/privacy",
-];
 
 function localePath(locale: "ar" | "en", path: string): string {
   if (locale === "ar") return path;

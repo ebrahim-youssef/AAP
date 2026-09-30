@@ -32,5 +32,5 @@ const name = locale === "en" ? branch.nameEn : branch.nameAr;
       <dd dir={branch.phone ? "ltr" : undefined}>{phone}</dd>
     </div>
   </dl>
-  <a class="aa-btn aa-btn--secondary aa-btn--sm" href={localePath(locale, "branches/" + branch.slug)}>{text.branch.viewDetails}</a>
+  <a class="aa-btn aa-btn--secondary aa-btn--sm aa-btn--block" href={localePath(locale, "branches/" + branch.slug)}>{text.branch.viewDetails}</a>
 </article>
