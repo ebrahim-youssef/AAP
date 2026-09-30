@@ -209,7 +209,7 @@ body {
   gap: var(--space-4);
 }
 
-.aa-branch h2 {
+.aa-branch h3 {
   margin: 0;
   color: var(--text-brand);
   font-size: 17px;
@@ -519,7 +519,7 @@ body {
   }
 
   .aa-header-nav a[aria-current="page"] {
-    box-shadow: inset 0 -2px 0 var(--yellow-400);
+    box-shadow: inset 0 -2px 0 #fff;
   }
 
   .aa-tabs {
