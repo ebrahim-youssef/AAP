@@ -5,7 +5,7 @@ import Footer from "../components/Footer.astro";
 import TabBar from "../components/TabBar.astro";
 import { getStrings } from "../i18n/strings";
 import { isLocale, unlocalizedPath, type Locale } from "../lib/i18n";
-import { absoluteLocaleUrl } from "../lib/site-url";
+import { absoluteLocaleUrl, indexable } from "../lib/site-url";
 import { serializeJsonLd } from "../lib/seo";
 
 interface Props {
@@ -42,6 +42,7 @@ const jsonLdText = jsonLd === undefined ? null : serializeJsonLd(jsonLd);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    {!indexable && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang="ar" href={alternateUrls.ar} />
     <link rel="alternate" hreflang="en" href={alternateUrls.en} />

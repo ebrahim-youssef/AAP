@@ -223,3 +223,10 @@ test("Arabic 404 offers English home, search, and WhatsApp contact", async ({ pa
   await expect(page.locator("#missing-medicine-search")).toBeVisible();
   await expect(page.getByRole("button", { name: "اسأل على واتساب" })).toBeVisible();
 });
+
+test("preview build is kept out of search engines", async ({ request, page }) => {
+  const robots = await (await request.get("/robots.txt")).text();
+  expect(robots).toContain("Disallow: /");
+  await page.goto("/");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", "noindex, nofollow");
+});
