@@ -1,0 +1,14 @@
+﻿﻿manufacturer,price_egp,commercial_name_ar,route,commercial_name_en,scientific_name,drug_class
+Acme,"12.50",ميدي بلس,oral,"Medi, ""Plus"" 500",Paracetamol,Analgesic
+Acme,"1,250.00",بانادول إكسترا,oral,Panadol Extra,Paracetamol,Analgesic
+Other,"EGP 12",بانادول إكسترا 2,oral,Panadol Extra,Paracetamol,Analgesic
+Arabic Co,١٢٣٫٥,عربي وان,oral,Arabic One,Ingredient,Class
+Persian Co,۱۲۳٫۵,فارسی وان,oral,Persian One,Ingredient,Class
+Arab Med,12,دواء عربي,oral,,Ingredient,Class
+Bad Co,not-a-price,دواء سيء,oral,Bad Price,Ingredient,Class
+No Name,12,,oral,,Ingredient,Class
+Acme,"1,250.00",بانادول إكسترا,oral,Panadol Extra,Paracetamol,Analgesic
+Zero Co,0,دواء صفر,oral,Zero Price,Ingredient,Class
+Negative Co,-5,دواء سالب,oral,Negative Price,Ingredient,Class
+Plain Co,12,دواء عادي,oral,Plain 12,Ingredient,Class
+Missing Co,,دواء ناقص,oral,Missing Price,Ingredient,Class

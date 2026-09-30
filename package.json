@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "check": "astro check",
+    "data": "node scripts/import-medicines.ts",
     "test": "npm run build && vitest run",
     "test:e2e": "playwright test"
   },
