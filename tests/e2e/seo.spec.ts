@@ -1,7 +1,7 @@
 import { expect, request as playwrightRequest, test } from "@playwright/test";
 import { staticRoutes } from "../fixtures/routes";
 
-const origin = "https://aap.example";
+const origin = "https://aap.ovic391.workers.dev";
 const medicinePath = "/medicines/panadol-advance-500-mg-24-f-c-tabs";
 
 function localePath(locale: "ar" | "en", path: string): string {
@@ -110,7 +110,7 @@ test("sitemap index and medicine sitemap expose a real medicine URL", async ({ r
   expect(indexResponse.status()).toBe(200);
   expect(indexResponse.headers()["content-type"]).toContain("application/xml");
   const indexXml = await indexResponse.text();
-  expect(indexXml).toContain("https://aap.example/sitemaps/medicines-1.xml");
+  expect(indexXml).toContain("https://aap.ovic391.workers.dev/sitemaps/medicines-1.xml");
 
   const medicineResponse = await request.get("/sitemaps/medicines-1.xml");
   expect(medicineResponse.status()).toBe(200);

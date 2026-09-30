@@ -5,7 +5,7 @@ export default defineConfig({
   output: "static",
   adapter: cloudflare(),
   // TODO: replace the placeholder with the production site URL.
-  site: "https://aap.example",
+  site: "https://aap.ovic391.workers.dev",
   trailingSlash: "never",
   build: {
     format: "file",
