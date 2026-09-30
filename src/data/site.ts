@@ -1,6 +1,9 @@
+import { strings } from "../i18n/strings";
+
 export interface Branch {
   slug: string;
   nameAr: string;
+  nameEn: string;
   addressAr: string | null;
   hoursAr: string | null;
   phone: string | null;
@@ -22,6 +25,7 @@ export const branches: Branch[] = [
   {
     slug: "branch-1",
     nameAr: "الفرع الأول",
+    nameEn: "Branch 1",
     addressAr: null,
     hoursAr: null,
     phone: null,
@@ -31,6 +35,7 @@ export const branches: Branch[] = [
   {
     slug: "branch-2",
     nameAr: "الفرع التاني",
+    nameEn: "Branch 2",
     addressAr: null,
     hoursAr: null,
     phone: null,
@@ -46,4 +51,4 @@ export const delivery: Delivery = {
   hoursAr: null,
 };
 
-export const missingData = "بيانات تتوثّق";
+export const missingData = strings.ar.missingData;

@@ -6,6 +6,10 @@ export default defineConfig({
   adapter: cloudflare(),
   // TODO: replace the placeholder with the production site URL.
   site: "https://aap.example",
+  trailingSlash: "never",
+  build: {
+    format: "file",
+  },
   i18n: {
     defaultLocale: "ar",
     locales: ["ar", "en"],

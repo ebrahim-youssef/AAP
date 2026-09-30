@@ -5,39 +5,52 @@ import ShelfEdge from "./ShelfEdge.astro";
 import Wordmark from "./Wordmark.astro";
 import { whatsapp } from "../data/site";
 import { whatsappHref } from "../lib/contact";
+import { localePath, otherLocale, unlocalizedPath, type Locale } from "../lib/i18n";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
   currentPath: string;
   home?: boolean;
+  locale: Locale;
 }
 
-const { currentPath, home = false } = Astro.props;
+const { currentPath, home = false, locale } = Astro.props;
+const text = getStrings(locale);
+const pagePath = unlocalizedPath(currentPath);
 const navItems = [
-  { label: "الرئيسية", href: "/" },
-  { label: "بحث", href: "/medicines" },
-  { label: "صيدلي", href: whatsappHref(whatsapp, "عايز أسأل صيدلي") ?? "/branches", active: false },
-  { label: "الفروع", href: "/branches" },
+  { label: text.nav.home, href: localePath(locale, "/"), route: "/" },
+  { label: text.nav.medicines, href: localePath(locale, "medicines"), route: "/medicines" },
+  {
+    label: text.nav.pharmacist,
+    href: whatsappHref(whatsapp, text.contact.pharmacistMessage) ?? localePath(locale, "branches"),
+    route: null,
+    active: false,
+  },
+  { label: text.nav.branches, href: localePath(locale, "branches"), route: "/branches" },
 ];
 
-const isActive = (href: string, active = true) => active && (href === "/" ? currentPath === "/" : currentPath.startsWith(href));
+const isActive = (route: string | null, active = true) =>
+  active && route !== null && (route === "/" ? pagePath === "/" : pagePath.startsWith(route));
+const languageHref = localePath(otherLocale(locale), pagePath) + Astro.url.search;
 ---
 <header class="aa-apphd">
   <div class="aa-apphd__in">
     <div class="aa-apphd__top">
-      <a class="aa-brandlockup" href="/" aria-label="صيدليات علي أمين">
+      <a class="aa-brandlockup" href={localePath(locale, "/")} aria-label={text.brandName}>
         <LogoIcon class="aa-logo" ariaHidden={true} width={56} height={76} />
-        <Wordmark tone="inverse" english={true} />
+        <Wordmark tone="inverse" english={true} locale={locale} />
       </a>
-      <nav class="aa-header-nav" aria-label="روابط الموقع">
+      <nav class="aa-header-nav" aria-label={text.nav.site}>
         {navItems.map((item) => (
-          <a href={item.href} aria-current={isActive(item.href, item.active !== false) ? "page" : undefined}>{item.label}</a>
+          <a href={item.href} aria-current={isActive(item.route, item.active !== false) ? "page" : undefined}>{item.label}</a>
         ))}
       </nav>
+      <a class="aa-language-switch" href={languageHref} lang={otherLocale(locale)} aria-label={text.languageSwitchAria}>{text.switchLanguage}</a>
     </div>
     {home && (
       <div class="aa-apphd__search">
-        <h1 class="aa-apphd__search-title">دوّر على دواء</h1>
-        <SearchField id="home-medicine-search" variant="onBrand" labelHidden={true} />
+        <h1 class="aa-apphd__search-title">{text.search.title}</h1>
+        <SearchField id="home-medicine-search" variant="onBrand" labelHidden={true} locale={locale} />
       </div>
     )}
   </div>

@@ -1,13 +1,7 @@
 ---
-import Base from "../layouts/Base.astro";
+import PrivacyPage from "../components/pages/PrivacyPage.astro";
+import { isLocale, type Locale } from "../lib/i18n";
+
+const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
 ---
-<Base title="الخصوصية | صيدليات علي أمين" description="سياسة خصوصية قصيرة وواضحة لموقع صيدليات علي أمين.">
-  <div class="aa-page">
-    <h1>الخصوصية</h1>
-    <section class="aa-page__section aa-copy" aria-labelledby="privacy-title">
-      <h2 id="privacy-title">إيه اللي بيحصل لبياناتك؟</h2>
-      <p>الموقع من غير حسابات ومن غير كوكيز. بنستخدم Cloudflare Web Analytics من غير كوكيز عشان نفهم استخدام الموقع بشكل عام.</p>
-      <p>رسائل واتساب والمكالمات بتحصل خارج الموقع، وبتخضع لسياسات واتساب وشركة الاتصالات.</p>
-    </section>
-  </div>
-</Base>
+<PrivacyPage locale={locale} />

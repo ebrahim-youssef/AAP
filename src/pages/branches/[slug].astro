@@ -1,14 +1,9 @@
 ---
-import Base from "../../layouts/Base.astro";
-import ContactActions from "../../components/ContactActions.astro";
-import { branches, delivery, missingData } from "../../data/site";
-import type { Branch } from "../../data/site";
+import BranchDetailPage from "../../components/pages/BranchDetailPage.astro";
+import { branches } from "../../data/site";
+import { isLocale, type Locale } from "../../lib/i18n";
 
 export const prerender = true;
-
-interface Props {
-  branch: Branch;
-}
 
 export function getStaticPaths() {
   return branches.map((branch) => ({
@@ -17,54 +12,6 @@ export function getStaticPaths() {
   }));
 }
 
-const { branch } = Astro.props;
+const locale: Locale = isLocale(Astro.currentLocale) ? Astro.currentLocale : "ar";
 ---
-<Base title={`${branch.nameAr} | صيدليات علي أمين`} description={`معلومات ${branch.nameAr} من صيدليات علي أمين.`}>
-  <div class="aa-page">
-    <h1>{branch.nameAr}</h1>
-    <section class="aa-page__section" aria-labelledby="branch-info-title">
-      <h2 id="branch-info-title">معلومات الفرع</h2>
-      <dl class="aa-facts">
-        <div>
-          <dt>العنوان</dt>
-          <dd>{branch.addressAr ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>المواعيد</dt>
-          <dd>{branch.hoursAr ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>التليفون</dt>
-          <dd dir={branch.phone ? "ltr" : undefined}>{branch.phone ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>الخريطة</dt>
-          <dd>
-            {branch.mapUrl ? <a href={branch.mapUrl}>افتح الموقع على الخريطة</a> : missingData}
-          </dd>
-        </div>
-        <div>
-          <dt>التوصيل</dt>
-          <dd>{branch.deliveryAr ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>مناطق التوصيل</dt>
-          <dd>{delivery.areasAr ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>رسوم التوصيل</dt>
-          <dd>{delivery.feeAr ?? missingData}</dd>
-        </div>
-        <div>
-          <dt>مواعيد التوصيل</dt>
-          <dd>{delivery.hoursAr ?? missingData}</dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="aa-page__section" aria-labelledby="branch-contact-title">
-      <h2 id="branch-contact-title">تواصل معانا</h2>
-      <ContactActions />
-    </section>
-  </div>
-</Base>
+<BranchDetailPage branch={Astro.props.branch} locale={locale} />

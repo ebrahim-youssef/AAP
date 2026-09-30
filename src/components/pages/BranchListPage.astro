@@ -1,0 +1,25 @@
+---
+import Base from "../../layouts/Base.astro";
+import BranchCard from "../BranchCard.astro";
+import { branches } from "../../data/site";
+import { getStrings } from "../../i18n/strings";
+import type { Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const text = getStrings(locale);
+---
+<Base title={text.branch.pageTitle} description={text.branch.listDescription}>
+  <div class="aa-page">
+    <h1>{text.home.branches}</h1>
+    <section class="aa-page__section" aria-labelledby="branches-list-title">
+      <h2 id="branches-list-title">{text.branch.choose}</h2>
+      <div class="aa-branch-list">
+        {branches.map((branch) => <BranchCard branch={branch} locale={locale} />)}
+      </div>
+    </section>
+  </div>
+</Base>

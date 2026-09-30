@@ -1,0 +1,73 @@
+---
+import Base from "../../layouts/Base.astro";
+import ContactActions from "../ContactActions.astro";
+import { delivery } from "../../data/site";
+import type { Branch } from "../../data/site";
+import { getStrings, interpolate } from "../../i18n/strings";
+import type { Locale } from "../../lib/i18n";
+import { buildBranchJsonLd } from "../../lib/seo";
+
+interface Props {
+  branch: Branch;
+  locale: Locale;
+}
+
+const { branch, locale } = Astro.props;
+const text = getStrings(locale);
+const name = locale === "en" ? branch.nameEn : branch.nameAr;
+const title = interpolate(text.branch.detailTitle, { name });
+const description = interpolate(text.branch.description, { name });
+---
+<Base
+  title={title}
+  description={description}
+  jsonLd={buildBranchJsonLd(branch, locale, Astro.site)}
+>
+  <div class="aa-page">
+    <h1>{name}</h1>
+    <section class="aa-page__section" aria-labelledby="branch-info-title">
+      <h2 id="branch-info-title">{text.branch.information}</h2>
+      <dl class="aa-facts">
+        <div>
+          <dt>{text.branch.address}</dt>
+          <dd>{branch.addressAr ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.hours}</dt>
+          <dd>{branch.hoursAr ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.phone}</dt>
+          <dd dir={branch.phone ? "ltr" : undefined}>{branch.phone ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.map}</dt>
+          <dd>
+            {branch.mapUrl ? <a href={branch.mapUrl}>{text.branch.openMap}</a> : text.missingData}
+          </dd>
+        </div>
+        <div>
+          <dt>{text.branch.delivery}</dt>
+          <dd>{branch.deliveryAr ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.areas}</dt>
+          <dd>{delivery.areasAr ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.fee}</dt>
+          <dd>{delivery.feeAr ?? text.missingData}</dd>
+        </div>
+        <div>
+          <dt>{text.branch.deliveryHours}</dt>
+          <dd>{delivery.hoursAr ?? text.missingData}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="aa-page__section" aria-labelledby="branch-contact-title">
+      <h2 id="branch-contact-title">{text.contact.contactHeading}</h2>
+      <ContactActions locale={locale} />
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,16 @@
+---
+import MedicinePage from "../../../components/pages/MedicinePage.astro";
+import { loadMedicinePageData } from "../../../lib/medicine-page";
+
+export const prerender = false;
+
+const slug = Astro.params.slug ?? "";
+const { asOf, row } = await loadMedicinePageData(slug);
+
+Astro.response.headers.set(
+  "Cache-Control",
+  row ? "public, max-age=3600, s-maxage=86400" : "public, max-age=60, s-maxage=300",
+);
+if (!row) Astro.response.status = 404;
+---
+<MedicinePage asOf={asOf} locale="en" row={row} slug={slug} />

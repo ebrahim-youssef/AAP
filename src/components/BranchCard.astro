@@ -1,32 +1,36 @@
 ---
 import type { Branch } from "../data/site";
-import { missingData } from "../data/site";
+import { localePath, type Locale } from "../lib/i18n";
+import { getStrings } from "../i18n/strings";
 
 interface Props {
   branch: Branch;
+  locale: Locale;
 }
 
-const { branch } = Astro.props;
-const phone = branch.phone ?? missingData;
+const { branch, locale } = Astro.props;
+const text = getStrings(locale);
+const phone = branch.phone ?? text.missingData;
+const name = locale === "en" ? branch.nameEn : branch.nameAr;
 ---
 <article class="aa-branch">
   <div class="aa-branch__h">
-    <h3>{branch.nameAr}</h3>
-    <span class="aa-tag aa-tag--info">{missingData}</span>
+    <h3>{name}</h3>
+    <span class="aa-tag aa-tag--info">{text.missingData}</span>
   </div>
   <dl class="aa-branch__facts">
     <div>
-      <dt>العنوان</dt>
-      <dd>{branch.addressAr ?? missingData}</dd>
+      <dt>{text.branch.address}</dt>
+      <dd>{branch.addressAr ?? text.missingData}</dd>
     </div>
     <div>
-      <dt>المواعيد</dt>
-      <dd>{branch.hoursAr ?? missingData}</dd>
+      <dt>{text.branch.hours}</dt>
+      <dd>{branch.hoursAr ?? text.missingData}</dd>
     </div>
     <div>
-      <dt>التليفون</dt>
+      <dt>{text.branch.phone}</dt>
       <dd dir={branch.phone ? "ltr" : undefined}>{phone}</dd>
     </div>
   </dl>
-  <a class="aa-btn aa-btn--secondary aa-btn--sm" href={`/branches/${branch.slug}`}>اعرف تفاصيل الفرع</a>
+  <a class="aa-btn aa-btn--secondary aa-btn--sm" href={localePath(locale, "branches/" + branch.slug)}>{text.branch.viewDetails}</a>
 </article>
