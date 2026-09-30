@@ -1,0 +1,33 @@
+---
+interface Fact {
+  label: string;
+  ltr?: boolean;
+  value: string;
+}
+
+interface Props {
+  items: Fact[];
+}
+
+const { items } = Astro.props;
+const breakAfter = new Set(["+", "(", "/"]);
+---
+<dl class="aa-facts">
+  {items.map((item) => (
+    <div>
+      <dt>{item.label}</dt>
+      <dd dir={item.ltr ? "ltr" : undefined}>
+        {item.ltr ? (
+          <bdi dir="ltr">
+            {item.value.split(/(\+|\(|\/)/u).map((part) => (
+              <>
+                {part}
+                {breakAfter.has(part) && <wbr />}
+              </>
+            ))}
+          </bdi>
+        ) : item.value}
+      </dd>
+    </div>
+  ))}
+</dl>

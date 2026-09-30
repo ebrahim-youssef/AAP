@@ -1,0 +1,15 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  boxed?: boolean;
+  tone?: "note" | "warning" | "danger";
+}
+
+const { boxed = false, tone = "note" } = Astro.props;
+const icons = { note: "info", warning: "clock", danger: "triangle-alert" } as const;
+---
+<div class:list={["aa-notice", `aa-notice--${tone}`, boxed && "aa-notice--boxed"]} role={tone === "danger" ? "alert" : "note"}>
+  <Icon name={icons[tone]} size={16} />
+  <span><slot /></span>
+</div>

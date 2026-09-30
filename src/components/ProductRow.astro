@@ -1,0 +1,30 @@
+---
+import StatusTag from "./StatusTag.astro";
+
+interface Props {
+  nameAr: string | null;
+  nameEn: string | null;
+  priceEgp: number;
+  slug: string;
+}
+
+const { nameAr, nameEn, priceEgp, slug } = Astro.props;
+const displayName = nameEn ?? nameAr ?? "دواء";
+const displayPrice = Number.isInteger(priceEgp)
+  ? String(priceEgp)
+  : priceEgp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+---
+<a class="aa-prow" href={`/medicines/${slug}`}>
+  <div>
+    <h3 dir={nameEn ? "ltr" : undefined}>{displayName}</h3>
+    {nameAr && <p class="aa-prow__alias">{nameAr}</p>}
+    <div class="aa-prow__meta">
+      <span>آخر سعر معروف</span>
+      <StatusTag />
+    </div>
+  </div>
+  <div class="aa-prow__p">
+    <b>{displayPrice}</b>
+    <small>{" "}ج.م</small>
+  </div>
+</a>

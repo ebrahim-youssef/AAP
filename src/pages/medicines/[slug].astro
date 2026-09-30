@@ -1,0 +1,127 @@
+---
+import Base from "../../layouts/Base.astro";
+import ContactActions from "../../components/ContactActions.astro";
+import FactList from "../../components/FactList.astro";
+import Notice from "../../components/Notice.astro";
+import PriceTag from "../../components/PriceTag.astro";
+import SearchField from "../../components/SearchField.astro";
+import { missingData } from "../../data/site";
+import { env } from "cloudflare:workers";
+
+export const prerender = false;
+
+interface MedicineRow {
+  drug_class: string | null;
+  manufacturer: string | null;
+  name_ar: string | null;
+  name_en: string | null;
+  price_egp: number;
+  route: string | null;
+  scientific: string | null;
+}
+
+interface MetaRow {
+  value: string;
+}
+
+const slug = Astro.params.slug;
+const row = slug
+  ? await env.DB.prepare(
+      "SELECT name_en, name_ar, scientific, manufacturer, drug_class, route, price_egp FROM medicines WHERE slug = ?1",
+    ).bind(slug).first<MedicineRow>()
+  : null;
+
+Astro.response.headers.set(
+  "Cache-Control",
+  row ? "public, max-age=3600, s-maxage=86400" : "public, max-age=60, s-maxage=300",
+);
+
+if (!row) {
+  Astro.response.status = 404;
+}
+
+const asOfRow = row
+  ? await env.DB.prepare("SELECT value FROM meta WHERE key = ?1").bind("as_of").first<MetaRow>()
+  : null;
+const asOf = asOfRow?.value ?? "2026-06";
+const monthNames = [
+  "يناير",
+  "فبراير",
+  "مارس",
+  "أبريل",
+  "مايو",
+  "يونيو",
+  "يوليو",
+  "أغسطس",
+  "سبتمبر",
+  "أكتوبر",
+  "نوفمبر",
+  "ديسمبر",
+];
+const [year, month] = asOf.split("-");
+const asOfLabel = monthNames[Number(month) - 1] ? `${monthNames[Number(month) - 1]} ${year}` : asOf;
+const displayPrice = row
+  ? Number.isInteger(row.price_egp)
+    ? String(row.price_egp)
+    : row.price_egp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")
+  : "";
+const medicineName = row?.name_en ?? row?.name_ar ?? slug ?? "الدواء";
+const title = row ? `سعر ${medicineName} في مصر | صيدليات علي أمين` : "الدواء مش موجود | صيدليات علي أمين";
+const description = row
+  ? `آخر سعر معروف لـ ${medicineName}: ${displayPrice} ج.م، حسب قائمة ${asOfLabel}.`
+  : "الدواء مش موجود في قائمة صيدليات علي أمين. جرّب البحث باسم مختلف.";
+---
+<Base title={title} description={description}>
+  {row ? (
+    <div class="aa-page aa-medicine-page">
+      <p class="aa-medicine-back"><a href="/medicines">رجوع للبحث</a></p>
+      <h1 dir={row.name_en ? "ltr" : undefined}>{medicineName}</h1>
+      {row.name_ar && <p class="aa-medicine-alias">{row.name_ar}</p>}
+
+      <section class="aa-page__section" aria-labelledby="medicine-price-title">
+        <h2 id="medicine-price-title">السعر والتوفر</h2>
+        <PriceTag price={row.price_egp} updatedAt={`حسب قائمة ${asOfLabel}`} />
+        <p class="aa-medicine-known">دي آخر معلومة معروفة، مش مخزون لحظي</p>
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-facts-title">
+        <h2 id="medicine-facts-title">معلومات الدواء</h2>
+        <FactList
+          items={[
+            { label: "المادة الفعالة", value: row.scientific ?? missingData, ltr: true },
+            { label: "الشركة المصنعة", value: row.manufacturer ?? missingData, ltr: true },
+            { label: "الشكل", value: row.route ?? missingData, ltr: true },
+            { label: "التصنيف", value: row.drug_class ?? missingData, ltr: true },
+          ]}
+        />
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-contact-title">
+        <h2 id="medicine-contact-title">اتأكد من التوفر</h2>
+        <ContactActions medicineName={medicineName} />
+      </section>
+
+      <section class="aa-page__section" aria-labelledby="medicine-notices-title">
+        <h2 id="medicine-notices-title">تنبيهات مهمة</h2>
+        <div class="aa-medicine-notices">
+          <Notice>الأسعار هي أسعار القوائم وقد تتغير.</Notice>
+          <Notice>الموقع لا يقدم نصيحة طبية. اسأل صيدلي أو دكتور.</Notice>
+          <Notice>الأدوية التي تحتاج روشتة لازم لها روشتة عند الاستلام أو التوصيل.</Notice>
+        </div>
+      </section>
+    </div>
+  ) : (
+    <div class="aa-page aa-medicine-missing">
+      <h1>مش لاقيين الدواء ده</h1>
+      <p>جرّب تكتب الاسم من جديد، أو ابعت الاسم لصيدلي.</p>
+      <section class="aa-page__section" aria-labelledby="missing-medicine-search-title">
+        <h2 id="missing-medicine-search-title">دوّر على دواء</h2>
+        <SearchField id="missing-medicine-search" />
+      </section>
+      <section class="aa-page__section" aria-labelledby="missing-medicine-contact-title">
+        <h2 id="missing-medicine-contact-title">اسألنا على واتساب</h2>
+        <ContactActions />
+      </section>
+    </div>
+  )}
+</Base>

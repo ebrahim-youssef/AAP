@@ -1,8 +1,13 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import type { IndexEntry } from "../src/lib/medicines.ts";
 import { buildMedicines } from "../src/lib/medicines.ts";
 import { toSql } from "../src/lib/medicines-sql.ts";
+import {
+  normalize,
+  shardKeyForNormalizedToken,
+} from "../src/lib/search.ts";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -77,6 +82,15 @@ function printCounts(
   console.log("duplicates dropped: " + duplicatesDropped);
 }
 
+function compactShard(entries: IndexEntry[]) {
+  return {
+    slugs: entries.map((entry) => entry[0]),
+    namesEn: entries.map((entry) => entry[1]),
+    namesAr: entries.map((entry) => entry[2]),
+    prices: entries.map((entry) => entry[3]),
+  };
+}
+
 async function main(): Promise<void> {
   const inputPath = resolve(projectRoot, process.argv[2] ?? "data/raw/medicines.csv");
   const asOf = process.argv[3] ?? "2026-06";
@@ -95,14 +109,46 @@ async function main(): Promise<void> {
   }
 
   const sqlPath = resolve(projectRoot, "data/medicines.sql");
-  const indexPath = resolve(projectRoot, "public/search-index.json");
+  const searchDir = resolve(projectRoot, "public/search");
+  const oldIndexPath = resolve(projectRoot, "public/search-index.json");
   await mkdir(dirname(sqlPath), { recursive: true });
-  await mkdir(dirname(indexPath), { recursive: true });
+  await rm(oldIndexPath, { force: true });
+  await rm(searchDir, { recursive: true, force: true });
+  await mkdir(searchDir, { recursive: true });
   await writeFile(sqlPath, toSql(result.medicines, asOf), "utf8");
+
+  const shardItems = new Map<string, typeof result.index>();
+  for (const entry of result.index) {
+    const keys = new Set<string>();
+    for (const name of [entry[1], entry[2]]) {
+      if (name === null) continue;
+      for (const token of normalize(name).split(" ")) {
+        const key = shardKeyForNormalizedToken(token);
+        if (key !== null) keys.add(key);
+      }
+    }
+
+    for (const key of keys) {
+      const items = shardItems.get(key) ?? [];
+      items.push(entry);
+      shardItems.set(key, items);
+    }
+  }
+
+  const shards = [...shardItems.keys()].sort();
   await writeFile(
-    indexPath,
-    JSON.stringify({ asOf, items: result.index }),
+    resolve(searchDir, "meta.json"),
+    JSON.stringify({ asOf, shards }),
     "utf8",
+  );
+  await Promise.all(
+    shards.map((key) =>
+      writeFile(
+        resolve(searchDir, key + ".json"),
+        JSON.stringify(compactShard(shardItems.get(key)!)),
+        "utf8",
+      ),
+    ),
   );
 }
 
