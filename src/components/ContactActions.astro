@@ -1,0 +1,66 @@
+---
+import { branches, missingData, whatsapp } from "../data/site";
+import { telHref, whatsappHref } from "../lib/contact";
+
+interface Props {
+  medicineName?: string;
+}
+
+const { medicineName } = Astro.props;
+const message = medicineName ? `هل ${medicineName} متوفر؟` : "عايز أسأل عن دوا";
+const whatsappUrl = whatsappHref(whatsapp, message);
+const dialogId = "branch-call-dialog";
+---
+<div class="aa-contact-actions">
+  <div class="aa-contact-action">
+    {whatsappUrl ? (
+      <a class="aa-btn aa-btn--primary" href={whatsappUrl}>اسأل على واتساب</a>
+    ) : (
+      <button class="aa-btn aa-btn--primary" type="button" disabled aria-describedby="whatsapp-missing">اسأل على واتساب</button>
+    )}
+    {!whatsappUrl && <span id="whatsapp-missing" class="aa-contact-missing">{missingData}</span>}
+  </div>
+  <a
+    class="aa-btn aa-btn--secondary"
+    href="/branches"
+    aria-haspopup="dialog"
+    aria-controls={dialogId}
+    data-contact-call-trigger
+  >اتصل بفرع</a>
+</div>
+
+<dialog class="aa-contact-dialog" id={dialogId} aria-labelledby="branch-call-title">
+  <div class="aa-contact-dialog__inner">
+    <div class="aa-contact-dialog__header">
+      <h2 id="branch-call-title">اختار الفرع</h2>
+      <button class="aa-contact-dialog__close" type="button" data-dialog-close>إغلاق</button>
+    </div>
+    <p>اختار الفرع عشان تتصل.</p>
+    <ul class="aa-contact-dialog__list">
+      {branches.map((branch) => {
+        const href = telHref(branch.phone);
+        return (
+          <li>
+            <span>{branch.nameAr}</span>
+            {href ? <a href={href} dir="ltr">{branch.phone}</a> : <span>{missingData}</span>}
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</dialog>
+
+<script is:inline>
+  document.querySelectorAll("[data-contact-call-trigger]").forEach((trigger) => {
+    const dialogId = trigger.getAttribute("aria-controls");
+    const dialog = dialogId ? document.getElementById(dialogId) : null;
+    if (!(dialog instanceof HTMLDialogElement)) return;
+
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (!dialog.open) dialog.showModal();
+      dialog.querySelector("[data-dialog-close]")?.focus();
+    });
+    dialog.querySelector("[data-dialog-close]")?.addEventListener("click", () => dialog.close());
+  });
+</script>

@@ -1,0 +1,32 @@
+---
+import type { Branch } from "../data/site";
+import { missingData } from "../data/site";
+
+interface Props {
+  branch: Branch;
+}
+
+const { branch } = Astro.props;
+const phone = branch.phone ?? missingData;
+---
+<article class="aa-branch">
+  <div class="aa-branch__h">
+    <h3>{branch.nameAr}</h3>
+    <span class="aa-tag aa-tag--info">{missingData}</span>
+  </div>
+  <dl class="aa-branch__facts">
+    <div>
+      <dt>العنوان</dt>
+      <dd>{branch.addressAr ?? missingData}</dd>
+    </div>
+    <div>
+      <dt>المواعيد</dt>
+      <dd>{branch.hoursAr ?? missingData}</dd>
+    </div>
+    <div>
+      <dt>التليفون</dt>
+      <dd dir={branch.phone ? "ltr" : undefined}>{phone}</dd>
+    </div>
+  </dl>
+  <a class="aa-btn aa-btn--secondary aa-btn--sm" href={`/branches/${branch.slug}`}>اعرف تفاصيل الفرع</a>
+</article>

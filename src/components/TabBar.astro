@@ -1,0 +1,27 @@
+---
+import Icon from "./Icon.astro";
+import { whatsappHref } from "../lib/contact";
+import { whatsapp } from "../data/site";
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const pharmacistHref = whatsappHref(whatsapp, "عايز أسأل صيدلي") ?? "/branches";
+type TabIcon = "house" | "search" | "message-circle" | "map-pin";
+const tabs: Array<{ label: string; href: string; icon: TabIcon; active: boolean }> = [
+  { label: "الرئيسية", href: "/", icon: "house", active: currentPath === "/" },
+  { label: "بحث", href: "/medicines", icon: "search", active: currentPath.startsWith("/medicines") },
+  { label: "صيدلي", href: pharmacistHref, icon: "message-circle", active: false },
+  { label: "الفروع", href: "/branches", icon: "map-pin", active: currentPath.startsWith("/branches") },
+];
+---
+<nav class="aa-tabs" aria-label="التنقل الرئيسي">
+  {tabs.map((tab) => (
+    <a class:list={{ "aa-tabs__link": true, on: tab.active }} href={tab.href} aria-current={tab.active ? "page" : undefined}>
+      <Icon name={tab.icon} />
+      {tab.label}
+    </a>
+  ))}
+</nav>

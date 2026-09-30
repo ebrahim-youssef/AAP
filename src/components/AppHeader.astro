@@ -1,7 +1,25 @@
 ---
 import LogoIcon from "./LogoIcon.astro";
+import SearchField from "./SearchField.astro";
 import ShelfEdge from "./ShelfEdge.astro";
 import Wordmark from "./Wordmark.astro";
+import { whatsapp } from "../data/site";
+import { whatsappHref } from "../lib/contact";
+
+interface Props {
+  currentPath: string;
+  home?: boolean;
+}
+
+const { currentPath, home = false } = Astro.props;
+const navItems = [
+  { label: "الرئيسية", href: "/" },
+  { label: "بحث", href: "/medicines" },
+  { label: "صيدلي", href: whatsappHref(whatsapp, "عايز أسأل صيدلي") ?? "/branches", active: false },
+  { label: "الفروع", href: "/branches" },
+];
+
+const isActive = (href: string, active = true) => active && (href === "/" ? currentPath === "/" : currentPath.startsWith(href));
 ---
 <header class="aa-apphd">
   <div class="aa-apphd__in">
@@ -10,7 +28,18 @@ import Wordmark from "./Wordmark.astro";
         <LogoIcon class="aa-logo" ariaHidden={true} width={56} height={76} />
         <Wordmark tone="inverse" english={true} />
       </a>
+      <nav class="aa-header-nav" aria-label="روابط الموقع">
+        {navItems.map((item) => (
+          <a href={item.href} aria-current={isActive(item.href, item.active !== false) ? "page" : undefined}>{item.label}</a>
+        ))}
+      </nav>
     </div>
+    {home && (
+      <div class="aa-apphd__search">
+        <h1 class="aa-apphd__search-title">دوّر على دواء</h1>
+        <SearchField id="home-medicine-search" variant="onBrand" labelHidden={true} />
+      </div>
+    )}
   </div>
   <ShelfEdge />
 </header>
