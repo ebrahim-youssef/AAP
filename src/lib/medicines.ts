@@ -153,11 +153,7 @@ function shortHash(value: string): string {
   return hash.toString(16).padStart(8, "0");
 }
 
-function slugFromName(nameEn: string | null): string {
-  if (nameEn === null) {
-    throw new Error("Arabic-only names need a nameAr value");
-  }
-
+function slugFromName(nameEn: string): string {
   const ascii = nameEn
     .normalize("NFKD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -167,8 +163,8 @@ function slugFromName(nameEn: string | null): string {
   return slug === "" ? "med-" + shortHash(nameEn) : slug;
 }
 
-function withSuffix(base: string, suffix: number): string {
-  const suffixText = suffix === 1 ? "" : "-" + suffix;
+function fitSlug(base: string, suffix = ""): string {
+  const suffixText = suffix === "" ? "" : "-" + suffix;
   const available = 80 - suffixText.length;
   const trimmedBase = base.slice(0, available).replace(/-+$/g, "");
   return trimmedBase + suffixText;
@@ -203,10 +199,13 @@ export function buildMedicines(csvText: string): {
 
   const read = (values: string[], index: number | undefined): string | null =>
     index === undefined ? null : clean(values[index]);
-  const medicines: Medicine[] = [];
+  type Candidate = Omit<Medicine, "slug"> & {
+    identity: string;
+    baseSlug: string;
+  };
+  const candidates: Candidate[] = [];
   const rejected: { line: number; reason: string }[] = [];
   const seen = new Set<string>();
-  const usedSlugs = new Set<string>();
 
   for (const record of records) {
     if (record.values.every((value) => value.trim() === "")) continue;
@@ -224,37 +223,47 @@ export function buildMedicines(csvText: string): {
       continue;
     }
 
+    const scientific = read(record.values, indexes.get("scientific_name"));
     const manufacturer = read(record.values, indexes.get("manufacturer"));
-    const duplicateKey = JSON.stringify([
+    const route = read(record.values, indexes.get("route"));
+    const identity = JSON.stringify([
       nameEn,
       nameAr,
+      scientific,
       manufacturer,
-      priceEgp,
+      route,
     ]);
-    if (seen.has(duplicateKey)) continue;
-    seen.add(duplicateKey);
+    if (seen.has(identity)) continue;
+    seen.add(identity);
 
-    const slugBase =
-      nameEn === null ? "med-" + shortHash(nameAr!) : slugFromName(nameEn);
-    let slug = withSuffix(slugBase, 1);
-    let suffix = 2;
-    while (usedSlugs.has(slug)) {
-      slug = withSuffix(slugBase, suffix);
-      suffix += 1;
-    }
-    usedSlugs.add(slug);
-
-    medicines.push({
-      slug,
+    candidates.push({
+      identity,
+      baseSlug:
+        nameEn === null ? "med-" + shortHash(nameAr!) : slugFromName(nameEn),
       nameEn,
       nameAr,
-      scientific: read(record.values, indexes.get("scientific_name")),
+      scientific,
       manufacturer,
       drugClass: read(record.values, indexes.get("drug_class")),
-      route: read(record.values, indexes.get("route")),
+      route,
       priceEgp,
     });
   }
+
+  const baseCounts = new Map<string, number>();
+  for (const candidate of candidates) {
+    baseCounts.set(candidate.baseSlug, (baseCounts.get(candidate.baseSlug) ?? 0) + 1);
+  }
+
+  const medicines: Medicine[] = candidates.map(
+    ({ identity, baseSlug, ...candidate }) => ({
+      ...candidate,
+      slug:
+        baseCounts.get(baseSlug)! > 1
+          ? fitSlug(baseSlug, shortHash(identity))
+          : fitSlug(baseSlug),
+    }),
+  );
 
   const index: IndexEntry[] = medicines.map(
     ({ slug, nameEn, nameAr, priceEgp }) => [

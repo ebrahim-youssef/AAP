@@ -21,8 +21,40 @@ describe("toSql", () => {
     expect(sql).toContain("'O''Pharma'");
     expect(sql).toContain("NULL");
     expect(sql).toContain(
-      "INSERT INTO meta (key, value) VALUES ('as_of', '2026-06');",
+      "INSERT OR REPLACE INTO meta (key, value) VALUES ('as_of', '2026-06');",
     );
+  });
+
+  it("builds the next table and swaps it before the final meta upsert", () => {
+    const medicine: Medicine = {
+      slug: "swap-me",
+      nameEn: "Swap Me",
+      nameAr: "استبدال",
+      scientific: null,
+      manufacturer: null,
+      drugClass: null,
+      route: "oral",
+      priceEgp: 1,
+    };
+    const sql = toSql([medicine], "2026-06");
+    const orderedTokens = [
+      "DROP TABLE IF EXISTS medicines_next;",
+      "CREATE TABLE medicines_next (",
+      "INSERT INTO medicines_next ",
+      "DROP TABLE IF EXISTS medicines;",
+      "ALTER TABLE medicines_next RENAME TO medicines;",
+      "CREATE TABLE IF NOT EXISTS meta (",
+      "INSERT OR REPLACE INTO meta (key, value) VALUES ('as_of', '2026-06');",
+    ];
+    let previous = -1;
+
+    for (const token of orderedTokens) {
+      const current = sql.indexOf(token);
+      expect(current).toBeGreaterThan(previous);
+      previous = current;
+    }
+    expect(sql).not.toContain("DROP TABLE IF EXISTS meta;");
+    expect(sql.trim().endsWith(orderedTokens.at(-1)!)).toBe(true);
   });
 
   it("keeps each medicine INSERT under 90 KB and inserts every row", () => {
@@ -38,7 +70,7 @@ describe("toSql", () => {
     }));
 
     const sql = toSql(medicines, "2026-06");
-    const statements = sql.match(/INSERT INTO medicines[\s\S]*?;/g) ?? [];
+    const statements = sql.match(/INSERT INTO medicines_next[\s\S]*?;/g) ?? [];
 
     expect(statements.length).toBeGreaterThan(1);
     expect(statements.every((statement) => Buffer.byteLength(statement, "utf8") < 90 * 1024)).toBe(
@@ -50,5 +82,20 @@ describe("toSql", () => {
       0,
     );
     expect(insertedRows).toBe(2_000);
+  });
+
+  it("throws when one medicine row would reach 90 KB", () => {
+    const medicine: Medicine = {
+      slug: "oversized-row",
+      nameEn: "x".repeat(90 * 1024),
+      nameAr: null,
+      scientific: null,
+      manufacturer: null,
+      drugClass: null,
+      route: null,
+      priceEgp: 1,
+    };
+
+    expect(() => toSql([medicine], "2026-06")).toThrow("oversized-row");
   });
 });

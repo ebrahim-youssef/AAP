@@ -1,7 +1,7 @@
 import type { Medicine } from "./medicines";
 
 const insertPrefix =
-  "INSERT INTO medicines (slug, name_en, name_ar, scientific, manufacturer, drug_class, route, price_egp) VALUES ";
+  "INSERT INTO medicines_next (slug, name_en, name_ar, scientific, manufacturer, drug_class, route, price_egp) VALUES ";
 const maxStatementBytes = 90 * 1024;
 
 function sqlString(value: string): string {
@@ -31,10 +31,9 @@ function byteLength(value: string): number {
 
 export function toSql(medicines: Medicine[], asOf: string): string {
   const statements = [
-    "DROP TABLE IF EXISTS medicines;",
-    "DROP TABLE IF EXISTS meta;",
+    "DROP TABLE IF EXISTS medicines_next;",
     [
-      "CREATE TABLE medicines (",
+      "CREATE TABLE medicines_next (",
       "  slug TEXT PRIMARY KEY,",
       "  name_en TEXT,",
       "  name_ar TEXT,",
@@ -45,8 +44,6 @@ export function toSql(medicines: Medicine[], asOf: string): string {
       "  price_egp REAL NOT NULL",
       ");",
     ].join("\n"),
-    "CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);",
-    "INSERT INTO meta (key, value) VALUES ('as_of', " + sqlString(asOf) + ");",
   ];
 
   let rows: string[] = [];
@@ -59,6 +56,9 @@ export function toSql(medicines: Medicine[], asOf: string): string {
 
   for (const medicine of medicines) {
     const row = medicineRow(medicine);
+    if (byteLength(insertPrefix + row + ";") >= maxStatementBytes) {
+      throw new Error("Medicine row " + medicine.slug + " exceeds 90 KB");
+    }
     const candidate = insertPrefix + rows.concat(row).join(",\n") + ";";
 
     if (rows.length > 0 && byteLength(candidate) >= maxStatementBytes) {
@@ -68,6 +68,14 @@ export function toSql(medicines: Medicine[], asOf: string): string {
     rows.push(row);
   }
   flushRows();
+  statements.push(
+    "DROP TABLE IF EXISTS medicines;",
+    "ALTER TABLE medicines_next RENAME TO medicines;",
+    "CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT);",
+    "INSERT OR REPLACE INTO meta (key, value) VALUES ('as_of', " +
+      sqlString(asOf) +
+      ");",
+  );
 
   return statements.join("\n") + "\n";
 }

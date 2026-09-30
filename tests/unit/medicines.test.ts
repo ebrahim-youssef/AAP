@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import type { Medicine } from "../../src/lib/medicines";
 import { buildMedicines } from "../../src/lib/medicines";
 
 const fixturePath = fileURLToPath(
@@ -68,15 +69,58 @@ describe("buildMedicines", () => {
     ]);
   });
 
-  it("drops exact duplicates and suffixes colliding slugs in input order", () => {
+  it("deduplicates by identity and gives collisions stable hash slugs", () => {
     const result = buildMedicines(fixture);
 
     expect(result.medicines).toHaveLength(7);
     expect(result.medicines.filter((medicine) => medicine.nameEn === "Panadol Extra").map((medicine) => medicine.slug)).toEqual([
-      "panadol-extra",
-      "panadol-extra-2",
+      "panadol-extra-5aeec9fd",
+      "panadol-extra-7b84f75f",
     ]);
     expect(result.rejected).not.toContainEqual({ line: 10, reason: "duplicate" });
+  });
+
+  it("keeps each medicine slug stable when the input rows are reversed", () => {
+    const lines = fixture.split("\r\n");
+    const reversedFixture = [
+      lines[0],
+      ...lines.slice(1, -1).reverse(),
+      "",
+    ].join("\r\n");
+    const identityKey = (medicine: Medicine) =>
+      [
+        medicine.nameEn,
+        medicine.nameAr,
+        medicine.scientific,
+        medicine.manufacturer,
+        medicine.route,
+      ].join("|");
+    const original = buildMedicines(fixture).medicines
+      .map((medicine) => [identityKey(medicine), medicine.slug])
+      .sort();
+    const reversed = buildMedicines(reversedFixture).medicines
+      .map((medicine) => [identityKey(medicine), medicine.slug])
+      .sort();
+
+    expect(reversed).toEqual(original);
+  });
+
+  it("excludes price from identity and keeps the first duplicate price", () => {
+    const csv = [
+      "commercial_name_en,commercial_name_ar,scientific_name,manufacturer,route,price_egp",
+      "Same Product,اسم المنتج,Ingredient,Maker,oral,10",
+      "Same Product,اسم المنتج,Ingredient,Maker,oral,99",
+    ].join("\r\n");
+    const changedPrice = csv.split("\r\n").slice(0, 2).join("\r\n").replace(",10", ",99");
+    const result = buildMedicines(csv);
+    const changed = buildMedicines(changedPrice);
+
+    expect(result.medicines).toHaveLength(1);
+    expect(result.medicines[0]).toMatchObject({
+      slug: "same-product",
+      priceEgp: 10,
+    });
+    expect(changed.medicines[0].slug).toBe("same-product");
   });
 
   it("gives Arabic-only medicines a stable hashed slug", () => {
@@ -97,8 +141,8 @@ describe("buildMedicines", () => {
     expect(result.index).toEqual([
       ["arabic-one", "Arabic One", "عربي وان", 123.5],
       ["medi-plus-500", 'Medi, "Plus" 500', "ميدي بلس", 12.5],
-      ["panadol-extra", "Panadol Extra", "بانادول إكسترا", 1250],
-      ["panadol-extra-2", "Panadol Extra", "بانادول إكسترا 2", 12],
+      ["panadol-extra-5aeec9fd", "Panadol Extra", "بانادول إكسترا", 1250],
+      ["panadol-extra-7b84f75f", "Panadol Extra", "بانادول إكسترا 2", 12],
       ["persian-one", "Persian One", "فارسی وان", 123.5],
       ["plain-12", "Plain 12", "دواء عادي", 12],
       ["med-0e826372", null, "دواء عربي", 12],
