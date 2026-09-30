@@ -2,16 +2,20 @@
 import "../styles/global.css";
 import AppHeader from "../components/AppHeader.astro";
 import Footer from "../components/Footer.astro";
+import TabBar from "../components/TabBar.astro";
 
 interface Props {
   description?: string;
+  home?: boolean;
   title: string;
 }
 
 const {
   description = "صيدليات علي أمين في مصر",
+  home = false,
   title,
 } = Astro.props;
+const currentPath = Astro.url.pathname;
 ---
 <!doctype html>
 <html lang="ar" dir="rtl">
@@ -25,8 +29,10 @@ const {
     <title>{title}</title>
   </head>
   <body class="aa-root">
-    <AppHeader />
-    <main><slot /></main>
+    <a class="aa-skip-link" href="#main-content">تخطى للمحتوى</a>
+    <AppHeader currentPath={currentPath} home={home} />
+    <main id="main-content"><slot /></main>
     <Footer />
+    <TabBar currentPath={currentPath} />
   </body>
 </html>

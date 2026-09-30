@@ -1,0 +1,34 @@
+---
+import Icon from "./Icon.astro";
+
+interface Props {
+  id?: string;
+  labelHidden?: boolean;
+  variant?: "default" | "onBrand" | "sunken";
+  value?: string;
+}
+
+const {
+  id = "medicine-search",
+  labelHidden = false,
+  value = "",
+  variant = "default",
+} = Astro.props;
+const variantClass = variant === "default" ? undefined : `aa-search--${variant}`;
+---
+<form class="aa-search-form" action="/medicines" method="get">
+  <label class:list={["aa-search-label", labelHidden && "aa-visually-hidden"]} for={id}>دوّر على دواء</label>
+  <div class:list={["aa-search", variantClass]}>
+    <Icon name="search" />
+    <input
+      id={id}
+      name="q"
+      type="search"
+      value={value || undefined}
+      placeholder="دوّر باسم الدواء…"
+      autocomplete="off"
+      inputmode="search"
+    />
+    <button class="aa-search__go" type="submit">دوّر</button>
+  </div>
+</form>

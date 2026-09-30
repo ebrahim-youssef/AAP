@@ -1,0 +1,16 @@
+---
+import Base from "../../layouts/Base.astro";
+import SearchField from "../../components/SearchField.astro";
+
+const query = Astro.url.searchParams.get("q") ?? "";
+---
+<Base title="البحث عن دواء | صيدليات علي أمين" description="دوّر على اسم الدواء في صيدليات علي أمين.">
+  <div class="aa-page">
+    <h1>دوّر على دواء</h1>
+    <section class="aa-page__section aa-search-page" aria-labelledby="medicine-search-title">
+      <h2 id="medicine-search-title">اكتب اسم الدواء</h2>
+      <SearchField id="medicine-page-search" value={query} />
+      <p class="aa-muted">البحث في الأدوية هيتوفر في الجزء الجاي.</p>
+    </section>
+  </div>
+</Base>
