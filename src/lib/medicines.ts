@@ -180,6 +180,7 @@ export function buildMedicines(csvText: string): {
   medicines: Medicine[];
   index: IndexEntry[];
   rejected: { line: number; reason: string }[];
+  duplicatesDropped: number;
 } {
   const records = parseCsv(csvText);
   const header = records.shift()?.values.map((value) => value.trim()) ?? [];
@@ -205,6 +206,7 @@ export function buildMedicines(csvText: string): {
   };
   const candidates: Candidate[] = [];
   const rejected: { line: number; reason: string }[] = [];
+  let duplicatesDropped = 0;
   const seen = new Set<string>();
 
   for (const record of records) {
@@ -233,7 +235,10 @@ export function buildMedicines(csvText: string): {
       manufacturer,
       route,
     ]);
-    if (seen.has(identity)) continue;
+    if (seen.has(identity)) {
+      duplicatesDropped += 1;
+      continue;
+    }
     seen.add(identity);
 
     candidates.push({
@@ -282,5 +287,6 @@ export function buildMedicines(csvText: string): {
     medicines,
     index,
     rejected,
+    duplicatesDropped,
   };
 }

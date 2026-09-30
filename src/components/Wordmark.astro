@@ -1,7 +1,6 @@
 ---
 interface Props {
   english?: boolean;
-  href?: string;
   locale?: "ar" | "en";
   size?: "md" | "sm" | "lg";
   tone?: "brand" | "inverse";
@@ -11,7 +10,6 @@ import { getStrings } from "../i18n/strings";
 
 const {
   english = false,
-  href,
   locale = "ar",
   size = "md",
   tone = "brand",
@@ -24,16 +22,8 @@ const classes = [
 const text = getStrings(locale);
 const label = text.brandName;
 ---
-{href ? (
-  <a class={classes} href={href} aria-label={label}>
-    <strong>{text.wordmark.primary}</strong>
-    <small>{text.wordmark.secondary}</small>
-    {english && <em>{text.wordmark.secondaryLine}</em>}
-  </a>
-) : (
-  <span class={classes} aria-label={label}>
-    <strong>{text.wordmark.primary}</strong>
-    <small>{text.wordmark.secondary}</small>
-    {english && <em>{text.wordmark.secondaryLine}</em>}
-  </span>
-)}
+<span class={classes} aria-label={label}>
+  <strong>{text.wordmark.primary}</strong>
+  <small>{text.wordmark.secondary}</small>
+  {english && <em>{text.wordmark.secondaryLine}</em>}
+</span>

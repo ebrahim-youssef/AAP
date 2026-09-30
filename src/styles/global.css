@@ -112,8 +112,7 @@ body {
 }
 
 .aa-home__intro p,
-.aa-copy p,
-.aa-muted {
+.aa-copy p {
   margin: 0;
   color: var(--text-secondary);
   font-size: var(--text-body);
@@ -189,10 +188,6 @@ body {
 .aa-tabs__link,
 .aa-header-nav a {
   touch-action: manipulation;
-}
-
-.aa-search-page .aa-muted {
-  margin-top: var(--space-4);
 }
 
 .aa-search-no-js,
@@ -339,10 +334,6 @@ html[dir="ltr"] .aa-prow__p {
   text-align: end;
 }
 
-.aa-branch > .aa-btn {
-  width: 100%;
-}
-
 .aa-facts {
   margin: 0;
 }
@@ -394,10 +385,6 @@ html[dir="ltr"] .aa-prow__p {
 
 .aa-contact-actions > .aa-btn {
   flex: 1 1 160px;
-}
-
-.aa-contact-actions .aa-btn {
-  width: 100%;
 }
 
 .aa-contact-missing {

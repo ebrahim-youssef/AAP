@@ -7,6 +7,7 @@ import PriceTag from "../PriceTag.astro";
 import NotFoundContent from "../NotFoundContent.astro";
 import { getStrings, interpolate } from "../../i18n/strings";
 import { localePath, type Locale } from "../../lib/i18n";
+import { formatPrice } from "../../lib/format-price";
 import type { MedicineRow } from "../../lib/medicine-page";
 import { buildMedicineJsonLd } from "../../lib/seo";
 
@@ -20,11 +21,7 @@ interface Props {
 const { asOf, locale, row, slug } = Astro.props;
 const text = getStrings(locale);
 const medicineName = row?.name_en ?? row?.name_ar ?? slug ?? text.search.fallbackName;
-const displayPrice = row
-  ? Number.isInteger(row.price_egp)
-    ? String(row.price_egp)
-    : row.price_egp.toFixed(2).replace(/0+$/, "").replace(/\.$/, "")
-  : "";
+const displayPrice = row ? formatPrice(row.price_egp) : "";
 const [year, month] = asOf.split("-");
 const asOfLabel = text.months[Number(month) - 1]
   ? text.months[Number(month) - 1] + " " + year

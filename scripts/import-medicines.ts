@@ -11,56 +11,6 @@ import {
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-function countCsvDataRows(csvText: string): number {
-  const text = csvText.charCodeAt(0) === 0xfeff ? csvText.slice(1) : csvText;
-  let inQuotes = false;
-  let fieldStart = true;
-  let recordHasValue = false;
-  let records = 0;
-
-  const finishRecord = () => {
-    if (recordHasValue) records += 1;
-    fieldStart = true;
-    recordHasValue = false;
-  };
-
-  for (let index = 0; index < text.length; index += 1) {
-    const character = text[index];
-
-    if (inQuotes) {
-      if (character === '"') {
-        if (text[index + 1] === '"') {
-          recordHasValue = true;
-          index += 1;
-        } else {
-          inQuotes = false;
-        }
-      } else if (character === "\r") {
-        if (text[index + 1] === "\n") index += 1;
-      } else if (character !== "\n") {
-        recordHasValue = character.trim() !== "" || recordHasValue;
-      }
-      continue;
-    }
-
-    if (fieldStart && character === '"') {
-      inQuotes = true;
-      fieldStart = false;
-    } else if (character === ",") {
-      fieldStart = true;
-    } else if (character === "\r" || character === "\n") {
-      if (character === "\r" && text[index + 1] === "\n") index += 1;
-      finishRecord();
-    } else {
-      fieldStart = false;
-      if (character.trim() !== "") recordHasValue = true;
-    }
-  }
-
-  if (recordHasValue) finishRecord();
-  return Math.max(0, records - 1);
-}
-
 function printCounts(
   kept: number,
   rejected: { line: number; reason: string }[],
@@ -96,13 +46,8 @@ async function main(): Promise<void> {
   const asOf = process.argv[3] ?? "2026-06";
   const csvText = await readFile(inputPath, "utf8");
   const result = buildMedicines(csvText);
-  const dataRows = countCsvDataRows(csvText);
-  const duplicatesDropped = Math.max(
-    0,
-    dataRows - result.medicines.length - result.rejected.length,
-  );
 
-  printCounts(result.medicines.length, result.rejected, duplicatesDropped);
+  printCounts(result.medicines.length, result.rejected, result.duplicatesDropped);
   if (result.medicines.length === 0) {
     process.exitCode = 1;
     return;

@@ -1,7 +1,5 @@
 export type Locale = "ar" | "en";
 
-export const locales: readonly Locale[] = ["ar", "en"];
-
 export function localePath(locale: Locale, path = "/"): string {
   const normalizedPath = path === "/" ? "" : path.replace(/^\/+|\/+$/g, "");
   const suffix = normalizedPath === "" ? "" : `/${normalizedPath}`;

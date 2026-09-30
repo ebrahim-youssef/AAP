@@ -1,15 +1,5 @@
 import { expect, test } from "@playwright/test";
-
-const pagePaths = [
-  "/",
-  "/medicines",
-  "/branches",
-  "/branches/branch-1",
-  "/branches/branch-2",
-  "/about",
-  "/terms",
-  "/privacy",
-];
+import { staticRoutes } from "../fixtures/routes";
 
 test("terms contains the three required notices", async ({ page }) => {
   await page.goto("/terms");
@@ -19,7 +9,7 @@ test("terms contains the three required notices", async ({ page }) => {
   await expect(page.locator(".aa-notice-list")).toContainText("لازم لها روشتة عند الاستلام أو التوصيل");
 });
 
-for (const path of pagePaths) {
+for (const path of staticRoutes) {
   test(`${path} has the site copyright line`, async ({ page }) => {
     await page.goto(path);
 

@@ -1,18 +1,8 @@
 import { expect, test } from "@playwright/test";
-
-const pagePaths = [
-  "/",
-  "/medicines",
-  "/branches",
-  "/branches/branch-1",
-  "/branches/branch-2",
-  "/about",
-  "/terms",
-  "/privacy",
-];
+import { staticRoutes } from "../fixtures/routes";
 
 test.describe("static Arabic pages", () => {
-  for (const path of pagePaths) {
+  for (const path of staticRoutes) {
     test(`${path} serves an Arabic RTL document with one heading`, async ({ page }) => {
       const response = await page.goto(path);
 

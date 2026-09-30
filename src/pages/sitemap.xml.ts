@@ -1,4 +1,8 @@
-import { buildSitemapIndex, medicineSitemapFileCount } from "../lib/sitemap";
+import {
+  buildSitemapIndex,
+  medicineSitemapFileCount,
+  sitemapResponse,
+} from "../lib/sitemap";
 import { readMedicineSlugs } from "../lib/medicine-slugs";
 import { absoluteSiteUrl } from "../lib/site-url";
 
@@ -15,10 +19,5 @@ export async function GET({ site }: { site: URL | undefined }): Promise<Response
     ...medicineFiles,
   ]);
 
-  return new Response(xml, {
-    headers: {
-      "Cache-Control": "public, max-age=3600, s-maxage=86400",
-      "Content-Type": "application/xml; charset=utf-8",
-    },
-  });
+  return sitemapResponse(xml);
 }

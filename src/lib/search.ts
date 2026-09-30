@@ -3,7 +3,7 @@ import type { IndexEntry } from "./medicines";
 // Derived from the most frequent unit, dosage-form, and pack tokens in the
 // June 2026 snapshot. These tokens remain part of matching, but do not choose
 // a shard on their own.
-export const SEARCH_SHARD_STOPLIST = [
+const SEARCH_SHARD_STOPLIST = [
   "mg",
   "gm",
   "mcg",
